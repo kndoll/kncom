@@ -28,8 +28,10 @@ public class AuctionListServiceTest {
 		
 		List<AuctionList> testResult = auctionListService.getAuctionList("12.01");
 		
-		for (AuctionList loop : testResult) {
-			System.out.println("## TEST DATA ==> " + loop.getAddress());
+		if (testResult != null) {
+			for (AuctionList loop : testResult) {
+				System.out.println("## TEST DATA ==> " + loop.getAddress());
+			}
 		}
 		*/
 		

@@ -149,8 +149,11 @@ public class MarketPriceDao {
 								_marketPriceVO.setBunji1(_dirPathArr[2]);
 								_marketPriceVO.setBunji2(_dirPathArr[3]);
 								
-								_marketPriceVO.setDong(dongKey.split("_")[1]);
-								_marketPriceVO.setHo(hoKey.split("_")[1]);
+								//_marketPriceVO.setDong(dongKey.split("_")[1]);
+								_marketPriceVO.setDong(dongKey);
+								//_marketPriceVO.setHo(hoKey.split("_")[1]);
+								_marketPriceVO.setHo(hoKey);
+								
 								_marketPriceVO.setCenterValue(data.get("CENTERVALUE").toString());
 								_marketPriceVO.setSang(data.get("SANG").toString());
 								_marketPriceVO.setHa(data.get("HA").toString());
