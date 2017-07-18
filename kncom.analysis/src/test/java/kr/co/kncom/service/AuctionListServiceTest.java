@@ -1,9 +1,12 @@
 package kr.co.kncom.service;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
+
+import kr.co.kncom.domain.AuctionList;
 
 public class AuctionListServiceTest {
 
@@ -19,4 +22,18 @@ public class AuctionListServiceTest {
 		
 		System.out.println("### auctionService ==> " + auctionService.getMarketPriceList(params));
 	}
+	
+	@Test
+	public void getAuctionListTest() {
+		
+		AuctionListService auctionListService = new AuctionListService();
+		
+		List<AuctionList> testResult = auctionListService.getAuctionList("12.01");
+		
+		for (AuctionList loop : testResult) {
+			System.out.println("## TEST DATA ==> " + loop.getAddress());
+		}
+		
+	}
+	
 }
