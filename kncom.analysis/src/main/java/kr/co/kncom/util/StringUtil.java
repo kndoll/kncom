@@ -1,5 +1,6 @@
 package kr.co.kncom.util;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Calendar;
 
 public class StringUtil {
@@ -60,4 +61,23 @@ public class StringUtil {
 		return getDate(iDay).replaceAll("-", separator);
 	}
 	
+	/**
+	 * 전달 받은 String의 문자열을 확인한다.
+	 * 
+	 * @param originalStr
+	 */
+	public static void  checkCharSet(String originalStr) {
+		
+		String [] charSet = {"utf-8","euc-kr","ksc5601","iso-8859-1","x-windows-949"};
+		  
+		for (int i=0; i<charSet.length; i++) {
+		 for (int j=0; j<charSet.length; j++) {
+		  try {
+		   System.out.println("[" + charSet[i] +"," + charSet[j] +"] = " + new String(originalStr.getBytes(charSet[i]), charSet[j]));
+		  } catch (UnsupportedEncodingException e) {
+		   e.printStackTrace();
+		  }
+		 }
+		}
+	}
 }

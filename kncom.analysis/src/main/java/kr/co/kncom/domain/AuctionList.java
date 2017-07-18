@@ -27,7 +27,7 @@ public class AuctionList {
 	private int bunji2;
 	private String x;
 	private String y;
-
+	
 	public String getInd() {
 		return ind;
 	}
