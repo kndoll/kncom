@@ -2,10 +2,12 @@ package kr.co.kncom;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.ComponentScan;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @SpringBootApplication
-@ComponentScan(basePackages = {"kr.co.kncom.controller", "kr.co.kncom.domain"})
+@EntityScan(basePackages = {"kr.co.kncom.domain"} )
+@EnableJpaRepositories(basePackages = {"kr.co.kncom.repository"})
 public class Application {
 
 	public static void main(String[] args) {
