@@ -17,12 +17,12 @@ import com.google.gson.Gson;
 
 import kr.co.kncom.domain.AuctionList;
 import kr.co.kncom.repository.AuctionListRepository;
-import kr.co.kncom.service.AuctionService;
+import kr.co.kncom.service.AuctionListService;
 
 @Controller
 public class AuctionListController {
 
-	AuctionService auctionService = new AuctionService();
+	AuctionListService auctionService = new AuctionListService();
 	@Autowired
 	AuctionListRepository auctionListRepository;
 	Gson gson = new Gson();
@@ -36,23 +36,17 @@ public class AuctionListController {
 		List<AuctionList> _auctionList = auctionListRepository.findBySaledayStartingWithOrderBySaledayAsc(bidDate);
 		List<AuctionList> auctionList = new ArrayList<AuctionList>();
 		
-		// 문자셋 변환
-		String _ind = null;
-		String _address = null;
-		String _result = null;
-		
 		AuctionList auctionListVO = null;
 		for(AuctionList tmpData : _auctionList) {
 			auctionListVO = new AuctionList();
+			
+			// 데이터 변환 - service layer로 이동해야 함.
 			auctionListVO = tmpData;
 			
-			_ind = new String(tmpData.getInd().getBytes("iso-8859-1"), "euc-kr");
-			_address = new String(tmpData.getAddress().getBytes("iso-8859-1"), "euc-kr");
-			_result = new String(tmpData.getResult().getBytes("iso-8859-1"), "euc-kr");
-			
-			auctionListVO.setInd(_ind);
-			auctionListVO.setAddress(_address);;
-			auctionListVO.setResult(_result);
+			auctionListVO.setInd(new String(tmpData.getInd().getBytes("iso-8859-1"), "euc-kr"));
+			auctionListVO.setAddress(new String(tmpData.getAddress().getBytes("iso-8859-1"), "euc-kr"));
+			auctionListVO.setGubun(new String(tmpData.getGubun().getBytes("iso-8859-1"), "euc-kr"));
+			auctionListVO.setResult(new String(tmpData.getResult().getBytes("iso-8859-1"), "euc-kr"));
 			
 			auctionList.add(auctionListVO);
 		}

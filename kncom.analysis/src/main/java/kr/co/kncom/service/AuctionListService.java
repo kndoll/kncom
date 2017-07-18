@@ -9,11 +9,10 @@ import com.google.gson.Gson;
 import kr.co.kncom.dao.MarketConditionDao;
 import kr.co.kncom.vo.MarketPriceVO;
 
-public class AuctionService {
+public class AuctionListService {
 
-	// 빈 설정으로 변경해야 함.
 	private MarketConditionDao marketConditionDao = new MarketConditionDao();
-
+	
 	public String getMarketPriceList(Map params) {
 
 		List<MarketPriceVO> marketPriceList = new ArrayList<MarketPriceVO>();

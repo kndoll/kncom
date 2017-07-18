@@ -66,7 +66,7 @@ public class StringUtil {
 	 * 
 	 * @param originalStr
 	 */
-	public static void  checkCharSet(String originalStr) {
+	public static void checkCharSet(String originalStr) {
 		
 		String [] charSet = {"utf-8","euc-kr","ksc5601","iso-8859-1","x-windows-949"};
 		  
@@ -80,4 +80,5 @@ public class StringUtil {
 		 }
 		}
 	}
+	
 }

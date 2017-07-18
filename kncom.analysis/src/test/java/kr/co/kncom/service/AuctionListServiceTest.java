@@ -5,12 +5,12 @@ import java.util.Map;
 
 import org.junit.Test;
 
-public class AuctionServiceTest {
+public class AuctionListServiceTest {
 
 	@Test
 	public void getMarketPriceListTest() {
 		
-		AuctionService auctionService = new AuctionService();
+		AuctionListService auctionService = new AuctionListService();
 		
 		Map<String, String> params = new HashMap<String, String>();
 		
