@@ -1,7 +1,10 @@
 package kr.co.kncom.util;
 
 import java.io.UnsupportedEncodingException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 
 public class StringUtil {
 	
@@ -48,6 +51,43 @@ public class StringUtil {
 		sbDate.append(nDay);
 
 		return sbDate.toString();
+	}
+	
+	/**
+	 * 
+	 * 대상월을 기준으로 특정월을 계산
+	 * 
+	 * @param offset
+	 * @param targetDate 201701
+	 * @return
+	 */
+	public static String getDateFromTargetDate(int offset, String targetDate) {
+		
+		String rtnDate = null;
+		
+		Calendar cal = Calendar.getInstance();
+		
+		if (targetDate != null) {
+			
+			int year = Integer.parseInt(targetDate.substring(0, 4));
+			int month = Integer.parseInt(targetDate.substring(4, 6));
+			int day = 1;
+			
+			// 대상일 설정
+			cal.set(year, month-1, day);
+			cal.add(Calendar.MONTH, offset);
+			
+			Date calDate = cal.getTime();
+			
+			SimpleDateFormat formatter = new SimpleDateFormat("yyyyMM", Locale.getDefault());
+			
+			rtnDate = formatter.format(calDate);
+			
+		} else {
+			rtnDate =  null;
+		}
+		
+		return rtnDate;
 	}
 	
 	/**

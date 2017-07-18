@@ -14,6 +14,7 @@ import org.json.XML;
 import com.google.gson.Gson;
 
 import kr.co.kncom.util.FileUtil;
+import kr.co.kncom.util.StringUtil;
 import kr.co.kncom.vo.MarketPriceVO;
 
 /**
@@ -21,7 +22,7 @@ import kr.co.kncom.vo.MarketPriceVO;
  * @author kndoll
  *
  */
-public class MarketConditionDao {
+public class MarketPriceDao {
 	
 	// 아래 데이터는 properties로 뽑아내야 함.
 	
@@ -32,7 +33,7 @@ public class MarketConditionDao {
 		
 		String index = params.get("index").toString();
 		
-//		System.out.println("## INDEX ==> " + index);
+		System.out.println("## INDEX ==> " + index);
 		String marketPriceDirPath = "P:\\newvalues\\1\\";
 		String areaDirPath = "F:\\1\\";
 		
@@ -60,12 +61,54 @@ public class MarketConditionDao {
 			String _tmpFileStr;
 			MarketPriceVO _marketPriceVO;
 			
-			for (String vo : fileList) {
+			// bidDate
+			String bidDate = "20"+params.get("bidDate").toString();
+			String[] _bidDateArr = bidDate.split("\\.");
+			String targetDate = bidDate = _bidDateArr[0] + _bidDateArr[1];
+			String calcDate = StringUtil.getDateFromTargetDate(-12, targetDate);
+			
+			String[] _fileNameArr = null;
+			String _fileName = null;
+			boolean isCorrectFile = false;
+			String compareStr = null;
+			
+			int fileDate = 0;
+			
+			for (String fileName : fileList) {
 					_tmpFileStr = null;
 					_marketPriceVO = null;
 					
+					System.out.println("######################################");
+					System.out.println("## fileName ==> " + fileName);
+					System.out.println("## T A R G E T - D A T E => " + targetDate);
+					System.out.println("## C A L C - D A T E => " + calcDate);
+					System.out.println("## P V  => " + params.get("suffix").toString());
+					compareStr = fileName.split("\\.")[0];
+					
+					isCorrectFile = compareStr.endsWith(params.get("suffix").toString());
+					
+					if (!isCorrectFile) {
+						System.out.println("## SKIP FILE - SUFFIX NOT MATCHING!!! ");
+						continue;
+					} else {
+						
+						_fileNameArr = fileName.split("_");
+						_fileName = _fileNameArr[0];
+						
+						fileDate = Integer.parseInt(_fileName);
+						
+						boolean isTargetDate = (fileDate <= Integer.parseInt(targetDate)); 
+						boolean isCalcDate = (fileDate >= Integer.parseInt(calcDate)); 
+						
+						if (!(isTargetDate && isCalcDate)) {
+							System.out.println("#### SKIP FILE - DATE NOT MATCHING!!!");
+							continue;
+						} 
+					}
+					
+					
 					try {
-						_tmpFileStr = FileUtil.readFileToString(marketPriceDirPath+vo);
+						_tmpFileStr = FileUtil.readFileToString(marketPriceDirPath+fileName);
 						
 //						System.out.println("### " + _tmpFileStr);
 						
@@ -99,7 +142,7 @@ public class MarketConditionDao {
 								data = (Map<String, Object>) ho.get(hoKey);
 								
 								_marketPriceVO.setBidName(params.get("bidName").toString());
-								_marketPriceVO.setDate(vo.split("_")[0]);
+								_marketPriceVO.setDate(fileName.split("_")[0]);
 								
 								_marketPriceVO.setSidogus_ind(_dirPathArr[0]);
 								_marketPriceVO.setDongs_ind(_dirPathArr[1]);

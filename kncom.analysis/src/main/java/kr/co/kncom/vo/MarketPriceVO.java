@@ -18,7 +18,9 @@ public class MarketPriceVO {
 	private String ha;
 	private String area;
 	private String scount;
-
+	
+	
+	
 	public String getBidName() {
 		return bidName;
 	}
