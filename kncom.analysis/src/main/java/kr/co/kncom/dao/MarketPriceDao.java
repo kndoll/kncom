@@ -195,11 +195,8 @@ public class MarketPriceDao {
 		
 		List<String[]> jyRawList = FileUtil.readFileToStringArrayList(areaDirPath+"daejang_jygyarea.dat");
 		
-		//System.out.println("## CNT ==> " + jyRawList.size());
-		
 		float _jygy = 0;
-		//System.out.println("## B U I D I N G - A R E A ==> " + buildingArea);
-		//System.out.println("## D O N G ==> " + dong);
+		float jygy_fix = 0;
 		
 		for (String[] _strArr : jyRawList) {
 			
@@ -212,23 +209,40 @@ public class MarketPriceDao {
 					
 					_jygy = Float.parseFloat(_strArr[37]);
 					
-					System.out.println("## buildingArea : " + buildingArea);
-					System.out.println("## _jygy : " + _jygy);
+				}
+			} else { // 동이 존재하는 경우
+				if (_strArr[21].equals(dong+"호") && _strArr[22].equals(ho+"호") && _strArr[27].equals("전유")) {
+					System.out.println("## DONG MATCH ==> " + _strArr[21] + " : " + dong);
+					System.out.println("## HO MATCH ==> " + _strArr[22] + " : " + ho);
 					
-					// 오차범위 체크 +-1
-					if (!(buildingArea+1 >= _jygy && buildingArea-1 <= _jygy)) {
-						System.out.println("## MATCH 전유공용면적!!!");
-						_jygy = 0;
+					_jygy = Float.parseFloat(_strArr[37]);
+				}
+			}
+			
+			if (_jygy > 0) {
+				System.out.println("##################################");
+				System.out.println("## buildingArea : " + buildingArea);
+				System.out.println("## _jygy : " + _jygy);
+				
+				// 오차범위 체크 +-1
+				if (!(buildingArea+1 >= _jygy && buildingArea-1 <= _jygy)) {
+					System.out.println("## NOT MATCH 전유공용면적!!!");
+					_jygy = 0;
+				} else {
+					System.out.println("## MATCH 전유공용면적!!!");
+					// 건물면적과 가장 근사한 값을 최종값으로 결정
+					if (jygy_fix > 0) {
+						jygy_fix = _jygy < jygy_fix ? _jygy : jygy_fix; 
 					} else {
-						System.out.println("## NOT MATCH 전유공용면적!!!");
+						jygy_fix = _jygy;
 					}
 				}
-			} else {
 				
+				System.out.println("##################################");
 			}
 		}
 		
-		rtnVal = _jygy;
+		rtnVal = jygy_fix;
 		
 		return rtnVal;
 	}
