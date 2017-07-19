@@ -25,17 +25,19 @@ import kr.co.kncom.vo.MarketPriceVO;
 public class MarketPriceDao {
 	
 	// 아래 데이터는 properties로 뽑아내야 함.
-	
+	private final String marketPriceDirPrefix = "P:\\newvalues\\1\\";
+	private final String areaDirPathPrefix = "F:\\201704lobig\\1\\";
 	
 	private Gson gson = new Gson();
 	
 	public List<MarketPriceVO> getMarketPriceList(Map params) {
 		
+		//StringUtil.printParamter(params);
+		
 		String index = params.get("index").toString();
 		
-		System.out.println("## INDEX ==> " + index);
-		String marketPriceDirPath = "P:\\newvalues\\1\\";
-		String areaDirPath = "F:\\1\\";
+		String marketPriceDirPath = marketPriceDirPrefix;
+		String areaDirPath = areaDirPathPrefix;
 		
 		String[] _dirPathArr = null;
 		
@@ -46,10 +48,9 @@ public class MarketPriceDao {
 			
 			for (String str : _dirPathArr) {
 				marketPriceDirPath += str + "\\";
+				areaDirPath += str + "\\";
 			}
 		}
-		
-		System.out.println("## dirPath ==> " + marketPriceDirPath);
 		
 		List<MarketPriceVO> rtnMarketPriceList = new ArrayList<MarketPriceVO>();
 		List<String> fileList = FileUtil.getXmlFileNameList(marketPriceDirPath);
@@ -149,16 +150,19 @@ public class MarketPriceDao {
 								_marketPriceVO.setBunji1(_dirPathArr[2]);
 								_marketPriceVO.setBunji2(_dirPathArr[3]);
 								
-								//_marketPriceVO.setDong(dongKey.split("_")[1]);
-								_marketPriceVO.setDong(dongKey);
-								//_marketPriceVO.setHo(hoKey.split("_")[1]);
-								_marketPriceVO.setHo(hoKey);
+								_marketPriceVO.setDong(dongKey.split("_")[1]);
+								_marketPriceVO.setHo(hoKey.split("_")[1]);
 								
 								_marketPriceVO.setCenterValue(data.get("CENTERVALUE").toString());
 								_marketPriceVO.setSang(data.get("SANG").toString());
 								_marketPriceVO.setHa(data.get("HA").toString());
 								_marketPriceVO.setArea(data.get("AREA").toString());
 								_marketPriceVO.setScount(data.get("SCOUNT").toString());
+								
+								// 전유공용면적
+								_marketPriceVO.setJygyArea(getCommonArea(areaDirPath, dongKey.split("_")[1], hoKey.split("_")[1], Float.parseFloat(params.get("buildingArea").toString())));
+								
+								// ** 대지면적 ** //
 								
 								rtnMarketPriceList.add(_marketPriceVO);
 							}
@@ -175,5 +179,44 @@ public class MarketPriceDao {
 		
 		return rtnMarketPriceList;
 	}
+	
+	/**
+	 * 전유공용면적을 가져온다.
+	 * 
+	 * @param areaDirPath
+	 */
+	private float getCommonArea(String areaDirPath, String dong, String ho, float buildingArea) {
+		
+		float rtnVal = 0;
+		
+		List<String[]> jyRawList = FileUtil.readFileToStringArrayList(areaDirPath+"daejang_jygyarea.dat");
+		
+		System.out.println("## CNT ==> " + jyRawList.size());
+		
+		float _jygy = 0;
+		System.out.println("## B U I D I N G - A R E A ==> " + buildingArea);
+		
+		for (String[] _strArr : jyRawList) {
+			
+			//System.out.println("## TRY MATCH ==> " + _strArr[21] + " : " + dong);
+			
+			if (_strArr[21].equals(dong+"동") && _strArr[22].equals(ho+"호") && _strArr[27].equals("전유")) {
+				System.out.println("## DONG MATCH ==> " + _strArr[21] + " : " + dong);
+				System.out.println("## HO MATCH ==> " + _strArr[22] + " : " + ho);
+				
+				_jygy = Float.parseFloat(_strArr[37]);
+				
+				// 
+				//System.out.println("## JYGY ==> " + _jygy);
+			}
+		}
+		
+		rtnVal = _jygy;
+		System.out.println("##################################################");
+		
+		return rtnVal;
+	}
+	
+	
 	
 }

@@ -18,9 +18,10 @@ public class MarketPriceVO {
 	private String ha;
 	private String area;
 	private String scount;
-	
-	
-	
+
+	private float jygyArea;
+	private float digiArea;
+
 	public String getBidName() {
 		return bidName;
 	}
@@ -123,6 +124,22 @@ public class MarketPriceVO {
 
 	public void setScount(String scount) {
 		this.scount = scount;
+	}
+
+	public float getJygyArea() {
+		return jygyArea;
+	}
+
+	public void setJygyArea(float jygyArea) {
+		this.jygyArea = jygyArea;
+	}
+
+	public float getDigiArea() {
+		return digiArea;
+	}
+
+	public void setDigiArea(float digiArea) {
+		this.digiArea = digiArea;
 	}
 
 	@Override

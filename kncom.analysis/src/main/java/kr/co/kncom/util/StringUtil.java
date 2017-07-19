@@ -5,21 +5,10 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
 
 public class StringUtil {
-	
-	/**
-	 * 
-	 * @param baseDate 기준년월 (12.01.01)
-	 * @param offset 증감 오프셋
-	 * @return 2013.01.01
-	 */
-	public static String getDate(String baseDate, int offset) {
-		
-		
-		
-		return baseDate;
-	}
 	
 	/**
 	 * 현재날짜 기준으로 특정일을 계산
@@ -119,6 +108,22 @@ public class StringUtil {
 		  }
 		 }
 		}
+	}
+	
+	/**
+	 * MAP 형식의 파라미터의 키와 값을 PRINT한다.
+	 * 
+	 * @param params
+	 */
+	public static void printParamter(Map<String, String> params) {
+		
+		Set<String> keys = params.keySet();
+		
+		System.out.println("##### P A R A M E T E R #####");
+		for (String key : keys) {
+			System.out.println(key + " ==> " + params.get(key));
+		}
+		System.out.println("#############################");
 	}
 	
 }

@@ -101,7 +101,7 @@
 			{{#auctionList}}
 				<tr>
 					<td>
-					<input name="chkIndex" type="checkbox" aria-label="..." value="{{sidogus_ind}}_{{dongs_ind}}_{{bunji1}}_{{bunji2}}" onclick="getSise(this, this.value, '{{ind}}');">
+					<input name="chkIndex" type="checkbox" aria-label="..." value="{{sidogus_ind}}_{{dongs_ind}}_{{bunji1}}_{{bunji2}}" onclick="getSise(this, this.value, '{{ind}}', '{{buildingarea}}');">
 					</td>
 	                <td>{{ind}}</td>
 	                <td>{{address}}</td>
@@ -195,7 +195,7 @@
     	
     	// 시세정보 요청
     	// ajax를 이용해 json으로 받아온다.
-    	function getSise(obj, index, bidName) {
+    	function getSise(obj, index, bidName, buildingArea) {
     		
     		//alert(obj.value);
     		console.log(index);
@@ -208,7 +208,7 @@
 						url : '/auctionMarketPrice', 
 						type: "GET",
 						contentType: 'application/json; charset=utf-8',
-						data : "index="+index+"&bidName=" + bidName + "&bidDate=" + "{{bidDate}}" + "&suffix=pv4",  
+						data : "index="+index+"&bidName=" + bidName + "&bidDate=" + "{{bidDate}}" + "&suffix=pv4" + "&buildingArea=" + buildingArea,  
 						dataType: 'text',
 						cache: false,
 						processData:false,
@@ -230,7 +230,8 @@
 								trData += "<td>" + this.centerValue + "</td>";
 								trData += "<td>" + this.sang + "</td>";
 								trData += "<td>" + this.ha + "</td>";
-								trData += "<td>" + "" + "</td>";
+								trData += "<td>" + this.jygyArea + "</td>";
+								trData += "<td>" + this.digiArea + "</td>";
 								trData += "</tr>";
 								
 								$("#marketPriceList").append(trData);
