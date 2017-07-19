@@ -18,7 +18,18 @@ public class MarketPriceDaoTest {
 		
 		dao.getMarketPriceList(params);
 		*/
+	}
+	
+	@Test
+	public void getDigiAreaCalcTest() {
 		
+		/*
+		MarketPriceDao dao = new MarketPriceDao();
+		
+		float result = dao.getDigiAreaCalc("\\11710\\10600\\121\\6\\", "3", "101", 560.02f);
+		
+		System.out.println("## result ==> " + result);
+		*/
 	}
 
 }

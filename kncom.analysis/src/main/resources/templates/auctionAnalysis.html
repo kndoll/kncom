@@ -101,7 +101,7 @@
 			{{#auctionList}}
 				<tr>
 					<td>
-					<input name="chkIndex" type="checkbox" aria-label="..." value="{{sidogus_ind}}_{{dongs_ind}}_{{bunji1}}_{{bunji2}}" onclick="getSise(this, this.value, '{{ind}}', '{{buildingarea}}');">
+					<input name="chkIndex" type="checkbox" aria-label="..." value="{{sidogus_ind}}_{{dongs_ind}}_{{bunji1}}_{{bunji2}}" onclick="getSise(this, this.value, '{{ind}}', '{{buildingarea}}', '{{landarea}}');">
 					</td>
 	                <td>{{ind}}</td>
 	                <td>{{address}}</td>
@@ -195,12 +195,19 @@
     	
     	// 시세정보 요청
     	// ajax를 이용해 json으로 받아온다.
-    	function getSise(obj, index, bidName, buildingArea) {
+    	function getSise(obj, index, bidName, buildingArea, landArea) {
     		
     		//alert(obj.value);
     		console.log(index);
     		// 체크 여부 확인
     		var isChecked = obj.checked; 
+    		
+    		var params = "index="+index;
+    		params += "&bidName=" + bidName;
+    		params += "&bidDate=" + "{{bidDate}}";
+    		params += "&suffix=pv4";
+    		params += "&buildingArea=" + buildingArea;
+    		params += "&landArea=" + landArea;
     		
     		// 체크 시는 ajax 실행
     		if (isChecked) {
@@ -208,7 +215,7 @@
 						url : '/auctionMarketPrice', 
 						type: "GET",
 						contentType: 'application/json; charset=utf-8',
-						data : "index="+index+"&bidName=" + bidName + "&bidDate=" + "{{bidDate}}" + "&suffix=pv4" + "&buildingArea=" + buildingArea,  
+						data : params,  
 						dataType: 'text',
 						cache: false,
 						processData:false,

@@ -32,7 +32,7 @@ public class FileUtil {
 	 * @param filePath
 	 * @return
 	 */
-	public static List<String[]> readFileToStringArrayList(String filePath) {
+	public static List<String[]> readFileToStringArrayList(String filePath, String separator) {
 		
 		List<String[]> rtnList = new ArrayList<String[]>(); 
 		
@@ -43,7 +43,7 @@ public class FileUtil {
 			String strLine = null;
 			
 			while((strLine = in.readLine()) != null) {
-				rtnList.add(strLine.split("\\|"));
+				rtnList.add(strLine.split("\\" + separator));
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
