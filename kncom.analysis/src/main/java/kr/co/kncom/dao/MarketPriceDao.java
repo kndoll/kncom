@@ -65,8 +65,8 @@ public class MarketPriceDao {
 			// bidDate
 			String bidDate = "20" + params.get("bidDate").toString();
 			String[] _bidDateArr = bidDate.split("\\.");
-			String targetDate = bidDate = _bidDateArr[0] + _bidDateArr[1];
-			String calcDate = StringUtil.getDateFromTargetDate(-12, targetDate);
+			String targetDate = _bidDateArr[0] + _bidDateArr[1];
+			String calcDate = null;
 
 			String[] _fileNameArr = null;
 			String _fileName = null;
@@ -74,7 +74,9 @@ public class MarketPriceDao {
 			String compareStr = null;
 
 			int fileDate = 0;
-
+			
+			String type = params.get("type").toString();
+			
 			for (String fileName : fileList) {
 				_tmpFileStr = null;
 				_marketPriceVO = null;
@@ -89,20 +91,34 @@ public class MarketPriceDao {
 					// ");
 					continue;
 				} else {
-
+					
 					_fileNameArr = fileName.split("_");
 					_fileName = _fileNameArr[0];
 
 					fileDate = Integer.parseInt(_fileName);
-
-					boolean isTargetDate = (fileDate <= Integer.parseInt(targetDate));
-					boolean isCalcDate = (fileDate >= Integer.parseInt(calcDate));
-
-					if (!(isTargetDate && isCalcDate)) {
-						// System.out.println("#### SKIP FILE - DATE NOT
-						// MATCHING!!!");
-						continue;
+					
+					if (type.equals("12")) {
+						// 12개월 이전 데이터
+						boolean isTargetDate = (fileDate <= Integer.parseInt(targetDate));
+						boolean isCalcDate = false;
+						
+						calcDate = StringUtil.getDateFromTargetDate(-12, targetDate);
+						isCalcDate = (fileDate >= Integer.parseInt(calcDate));
+						
+						if (!(isTargetDate && isCalcDate)) {
+							// System.out.println("#### SKIP FILE - DATE NOT
+							// MATCHING!!!");
+							continue;
+						}
+					} else if(type.equals("6")){ // 6개월 데이터
+						calcDate = StringUtil.getDateFromTargetDate(-6, targetDate);
+						
+						//System.out.println("_fileName ==> " + _fileName + " calcDate ==> " + calcDate + " targetDate ==> " + targetDate);
+						if (!_fileName.equals(calcDate)) {
+							continue;
+						}
 					}
+					
 				}
 
 				try {
@@ -276,10 +292,12 @@ public class MarketPriceDao {
 		// 부속지번 파일이 존재하는지 체크
 		boolean isExistBsjibunFile = false;
 		
-		for (String _fileName : fileList) {
-			if (_fileName.equals(bjibunFileName)) {
-				isExistBsjibunFile = true;
-				break;
+		if (fileList != null) {
+			for (String _fileName : fileList) {
+				if (_fileName.equals(bjibunFileName)) {
+					isExistBsjibunFile = true;
+					break;
+				}
 			}
 		}
 		

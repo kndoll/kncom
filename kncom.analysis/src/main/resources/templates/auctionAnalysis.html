@@ -88,7 +88,7 @@
 	                <th>용도</th>
 	                <th>감정가</th>
 	                <th>최저가</th>
-	                <th>매각가</th>
+	                <th>낙찰가</th>
 	                <th>토지면적</th>
 	                <th>건물면적</th>
 	                <th>매각일자</th>
@@ -101,7 +101,7 @@
 			{{#auctionList}}
 				<tr>
 					<td>
-					<input name="chkIndex" type="checkbox" aria-label="..." value="{{sidogus_ind}}_{{dongs_ind}}_{{bunji1}}_{{bunji2}}" onclick="getSise(this, this.value, '{{ind}}', '{{buildingarea}}', '{{landarea}}');">
+					<input name="chkIndex" type="checkbox" aria-label="..." value="{{sidogus_ind}}_{{dongs_ind}}_{{bunji1}}_{{bunji2}}" onclick="getSise(this, this.value, '{{ind}}', '{{buildingarea}}', '{{landarea}}', '{{appraisedvalue}}', '{{lowestvalue}}', '{{salevalue}}');">
 					</td>
 	                <td>{{ind}}</td>
 	                <td>{{address}}</td>
@@ -171,7 +171,7 @@
 	                <th>낙찰가/시세</th>
 	            </tr>
 	        </thead>
-	        <tbody id="marketPriceList">
+	        <tbody id="marketPriceListSixMonth">
 	        	
 	        </tbody>
 	    </table>
@@ -195,7 +195,7 @@
     	
     	// 시세정보 요청
     	// ajax를 이용해 json으로 받아온다.
-    	function getSise(obj, index, bidName, buildingArea, landArea) {
+    	function getSise(obj, index, bidName, buildingArea, landArea, appraisedvalue, lowestvalue, salevalue) {
     		
     		//alert(obj.value);
     		console.log(index);
@@ -215,7 +215,7 @@
 						url : '/auctionMarketPrice', 
 						type: "GET",
 						contentType: 'application/json; charset=utf-8',
-						data : params,  
+						data : params + "&type=12",  
 						dataType: 'text',
 						cache: false,
 						processData:false,
@@ -249,10 +249,51 @@
 							alert("error!!!");
 						}	
 					});
+	       		
+	       		// 6개월 데이터
+	       		$.ajax({
+					url : '/auctionMarketPrice', 
+					type: "GET",
+					contentType: 'application/json; charset=utf-8',
+					data : params + "&type=6",  
+					dataType: 'text',
+					cache: false,
+					processData:false,
+					success : function(data) {
+						var jsonObj = JSON.parse(data);
+						//alert(jsonObj.length);
+						$.each(jsonObj, function(){
+							// tr append
+							var trData = "<tr id=" + encodeURI(bidName) + ">";
+							
+							trData += "<td><b>" + this.bidName + "</b></td>";
+							trData += "<td>" + this.date + "</td>";
+							trData += "<td>" + this.sidogus_ind + "</td>";
+							trData += "<td>" + this.dongs_ind + "</td>";
+							trData += "<td>" + this.bunji1 + "</td>";
+							trData += "<td>" + this.bunji2 + "</td>";
+							trData += "<td>" + this.dong + "</td>";
+							trData += "<td>" + this.ho + "</td>";
+							trData += "<td>" + this.centerValue + "</td>";
+							trData += "<td>" + this.jygyArea + "</td>";
+							trData += "<td>" + this.digiArea + "</td>";
+							trData += "<td>" + appraisedvalue/this.centerValue + "</td>";
+							trData += "<td>" + salevalue/this.centerValue + "</td>";
+							trData += "</tr>";
+							
+							$("#marketPriceListSixMonth").append(trData);
+						});
+					},
+					error: function(jqXHR, textStatus, errorThrown)
+					{
+						alert("error!!!");
+					}	
+				});
     		} else {
 	    		// 체크 해제시는 해당 키의 자료 삭제
-	    		console.log(index);
+	    		// console.log(index);
 	    		$("#marketPriceList tr[id='" + encodeURI(bidName) + "']").remove();
+	    		$("#marketPriceListSixMonth tr[id='" + encodeURI(bidName) + "']").remove();
     		}	
     		
     	}

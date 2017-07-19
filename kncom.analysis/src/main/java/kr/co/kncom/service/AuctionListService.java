@@ -38,8 +38,6 @@ public class AuctionListService {
 		marketPriceList = marketConditionDao.getMarketPriceList(params);
 		String jsonStr = gson.toJson(marketPriceList);
 		
-		System.out.println("## params ==> " + params.get("bidDate"));
-		
 		return jsonStr;
 	}
 	
