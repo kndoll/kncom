@@ -27,8 +27,11 @@ public class MarketPriceDao {
 	// 아래 데이터는 properties로 뽑아내야 함.
 	private final String marketPriceDirPrefix = "P:\\newvalues\\1\\";
 	private final String areaDirPathPrefix = "F:\\201704lobig\\1\\";
-	private final String digiDirPrefix = "J:\\Tjiy\1\\";
-
+	private final String djgiDirPrefix = "J:\\Tjiy\\1\\";
+	
+	private final String bjibunFileName = "daejang_bsjibun.dat";
+	private final String djgiFileName = "djgi.dat";
+	
 	private Gson gson = new Gson();
 
 	public List<MarketPriceVO> getMarketPriceList(Map params) {
@@ -168,7 +171,7 @@ public class MarketPriceDao {
 									Float.parseFloat(params.get("buildingArea").toString())));
 
 							// 대지면적
-							_marketPriceVO.setDigiArea(getDigiAreaCalc(dirParh, dongKey.split("_")[1],
+							_marketPriceVO.setDigiArea(getDjgiAreaCalc(dirParh, dongKey.split("_")[1],
 									hoKey.split("_")[1], Float.parseFloat(params.get("landArea").toString())));
 
 							rtnMarketPriceList.add(_marketPriceVO);
@@ -261,10 +264,9 @@ public class MarketPriceDao {
 	 * @param landArea
 	 * @return
 	 */
-	protected float getDigiAreaCalc(String dirParh, String dong, String ho, float landArea) {
+	protected float getDjgiAreaCalc(String dirParh, String dong, String ho, float landArea) {
 
 		float rtnVal = 0;
-		final String bjibunFileName = "daejang_bsjibun.dat";
 
 		System.out.println("## LAND AREA ==> " + landArea);
 
@@ -281,10 +283,12 @@ public class MarketPriceDao {
 			}
 		}
 		
+		// #.1 주지번의 대지정보를 가져온다.
+		rtnVal = getDjgiAreaFromDjgi(dirParh, dong, ho, landArea);
+	
 		// 부속지번이 존재하는 경우
 		if (isExistBsjibunFile) {
-			// 부속지번 파일에 존재하는 모든 지번의 표제부 대지면적의 합을 구한다.
-			// #.1 부속지번 파일을 읽는다.
+			// #.2 부속지번 파일을 읽는다.
 			List<String[]> bsjibunList = FileUtil.readFileToStringArrayList(areaDirPathPrefix+dirParh+"daejang_bsjibun.dat", "|");
 			
 			StringBuilder _bsJibunFilePath;
@@ -301,14 +305,11 @@ public class MarketPriceDao {
 				_bsJibunFilePath.append(String.valueOf(Integer.parseInt(_arr[27])));
 				_bsJibunFilePath.append("//");
 				
-				rtnVal += getDajiAreaFromPyojenu(_bsJibunFilePath.toString(), dong, landArea);
+				// rtnVal += getDajiAreaFromPyojenu(_bsJibunFilePath.toString(), dong, landArea);
+				rtnVal += getDjgiAreaFromDjgi(_bsJibunFilePath.toString(), dong, ho, landArea);
 			}
-			
-		} else {
-			
-			rtnVal = getDajiAreaFromPyojenu(dirParh, dong, landArea);
 		}
-
+		
 		return rtnVal;
 	}
 	
@@ -355,5 +356,50 @@ public class MarketPriceDao {
 		
 		return rtnVal;
 	}
+	
+	/**
+	 * 대지권에서 대지면적을 가져온다.
+	 * 
+	 * @param dirParh
+	 * @param dong
+	 * @param ho
+	 * @param landArea
+	 * @return
+	 */
+	private float getDjgiAreaFromDjgi(String dirParh, String dong, String ho, float landArea) {
+		
+		float rtnVal = 0;
+		float _dajiArea = 0;
+		
+		// 대지권등록정보를 가져온다.
+		List<String[]> dajiList = FileUtil.readFileToStringArrayList(djgiDirPrefix+dirParh+djgiFileName, ",");
+		
+		boolean isExistDong = false;
+		for (String[] _arr : dajiList) {
 
+			isExistDong = _arr[8].equals("0000") ? false : true;
+			
+			// 동이 존재하는 경우
+			if (isExistDong) {
+				if(_arr[8].equals(dong) && _arr[10].equals(ho)) {
+					_dajiArea = Float.parseFloat(_arr[12].split("\\/")[0]);
+				}
+			} else {
+				if (_arr[10].equals(ho)) {
+					_dajiArea = Float.parseFloat(_arr[12].split("\\/")[0]);
+				}
+			}
+			
+			// 오차 범위 체크
+			if (_dajiArea > 0) {
+				if (landArea+5 > _dajiArea && landArea-5 < _dajiArea) {
+					rtnVal = _dajiArea;
+				} else {
+					System.out.println("## 오차범위 벗어남 ==> " + landArea + " : " + _dajiArea);
+				}
+			}
+		}
+		
+		return rtnVal;
+	}
 }

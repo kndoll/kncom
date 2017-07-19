@@ -21,15 +21,16 @@ public class MarketPriceDaoTest {
 	}
 	
 	@Test
-	public void getDigiAreaCalcTest() {
+	public void getDjgiAreaCalcTest() {
 		
 		/*
 		MarketPriceDao dao = new MarketPriceDao();
 		
-		float result = dao.getDigiAreaCalc("\\11710\\10600\\121\\6\\", "3", "101", 560.02f);
+		float result = dao.getDjgiAreaCalc("\\11710\\10600\\121\\6\\", "3", "101", 560.02f);
 		
 		System.out.println("## result ==> " + result);
-		*/
+	*/
+		
 	}
 
 }
