@@ -1,8 +1,5 @@
 package kr.co.kncom.dao;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.junit.Test;
 
 public class MarketPriceDaoTest {
@@ -10,6 +7,7 @@ public class MarketPriceDaoTest {
 	@Test
 	public void getMarketPriceListTest() {
 		
+		/*
 		MarketPriceDao dao = new MarketPriceDao();
 		
 		Map<String, Object> params = new HashMap<String, Object>();
@@ -19,6 +17,8 @@ public class MarketPriceDaoTest {
 		params.put("suffix", "pv4");
 		
 		dao.getMarketPriceList(params);
+		*/
+		
 	}
 
 }
