@@ -79,17 +79,14 @@ public class MarketPriceDao {
 					_tmpFileStr = null;
 					_marketPriceVO = null;
 					
-					System.out.println("######################################");
-					System.out.println("## fileName ==> " + fileName);
-					System.out.println("## T A R G E T - D A T E => " + targetDate);
-					System.out.println("## C A L C - D A T E => " + calcDate);
-					System.out.println("## P V  => " + params.get("suffix").toString());
+					
 					compareStr = fileName.split("\\.")[0];
 					
 					isCorrectFile = compareStr.endsWith(params.get("suffix").toString());
 					
+					// sunffix와 날짜 범위에 맞지 않으면 skip 한다.
 					if (!isCorrectFile) {
-						System.out.println("## SKIP FILE - SUFFIX NOT MATCHING!!! ");
+						// System.out.println("## SKIP FILE - SUFFIX NOT MATCHING!!! ");
 						continue;
 					} else {
 						
@@ -102,13 +99,20 @@ public class MarketPriceDao {
 						boolean isCalcDate = (fileDate >= Integer.parseInt(calcDate)); 
 						
 						if (!(isTargetDate && isCalcDate)) {
-							System.out.println("#### SKIP FILE - DATE NOT MATCHING!!!");
+							// System.out.println("#### SKIP FILE - DATE NOT MATCHING!!!");
 							continue;
 						} 
 					}
 					
 					
 					try {
+						
+						System.out.println("######################################");
+						System.out.println("## fileName ==> " + fileName);
+						System.out.println("## T A R G E T - D A T E => " + targetDate);
+						System.out.println("## C A L C - D A T E => " + calcDate);
+						System.out.println("## P V  => " + params.get("suffix").toString());
+						
 						_tmpFileStr = FileUtil.readFileToString(marketPriceDirPath+fileName);
 						
 //						System.out.println("### " + _tmpFileStr);
@@ -191,11 +195,11 @@ public class MarketPriceDao {
 		
 		List<String[]> jyRawList = FileUtil.readFileToStringArrayList(areaDirPath+"daejang_jygyarea.dat");
 		
-		System.out.println("## CNT ==> " + jyRawList.size());
+		//System.out.println("## CNT ==> " + jyRawList.size());
 		
 		float _jygy = 0;
-		System.out.println("## B U I D I N G - A R E A ==> " + buildingArea);
-		System.out.println("## D O N G ==> " + dong);
+		//System.out.println("## B U I D I N G - A R E A ==> " + buildingArea);
+		//System.out.println("## D O N G ==> " + dong);
 		
 		for (String[] _strArr : jyRawList) {
 			
@@ -203,19 +207,28 @@ public class MarketPriceDao {
 			// 동 여부 체크
 			if (dong.equals("NONE")) { // 동이 없는 경우
 				if (_strArr[22].equals(ho+"호") && _strArr[27].equals("전유")) {
-					System.out.println("## DONG MATCH ==> " + _strArr[21] + " : " + dong);
+					//System.out.println("## DONG MATCH ==> " + _strArr[21] + " : " + dong);
 					System.out.println("## HO MATCH ==> " + _strArr[22] + " : " + ho);
 					
 					_jygy = Float.parseFloat(_strArr[37]);
 					
-					// 
-					//System.out.println("## JYGY ==> " + _jygy);
+					System.out.println("## buildingArea : " + buildingArea);
+					System.out.println("## _jygy : " + _jygy);
+					
+					// 오차범위 체크 +-1
+					if (!(buildingArea+1 >= _jygy && buildingArea-1 <= _jygy)) {
+						System.out.println("## MATCH 전유공용면적!!!");
+						_jygy = 0;
+					} else {
+						System.out.println("## NOT MATCH 전유공용면적!!!");
+					}
 				}
-			} 
+			} else {
+				
+			}
 		}
 		
 		rtnVal = _jygy;
-		System.out.println("##################################################");
 		
 		return rtnVal;
 	}
