@@ -195,20 +195,23 @@ public class MarketPriceDao {
 		
 		float _jygy = 0;
 		System.out.println("## B U I D I N G - A R E A ==> " + buildingArea);
+		System.out.println("## D O N G ==> " + dong);
 		
 		for (String[] _strArr : jyRawList) {
 			
 			//System.out.println("## TRY MATCH ==> " + _strArr[21] + " : " + dong);
-			
-			if (_strArr[21].equals(dong+"동") && _strArr[22].equals(ho+"호") && _strArr[27].equals("전유")) {
-				System.out.println("## DONG MATCH ==> " + _strArr[21] + " : " + dong);
-				System.out.println("## HO MATCH ==> " + _strArr[22] + " : " + ho);
-				
-				_jygy = Float.parseFloat(_strArr[37]);
-				
-				// 
-				//System.out.println("## JYGY ==> " + _jygy);
-			}
+			// 동 여부 체크
+			if (dong.equals("NONE")) { // 동이 없는 경우
+				if (_strArr[22].equals(ho+"호") && _strArr[27].equals("전유")) {
+					System.out.println("## DONG MATCH ==> " + _strArr[21] + " : " + dong);
+					System.out.println("## HO MATCH ==> " + _strArr[22] + " : " + ho);
+					
+					_jygy = Float.parseFloat(_strArr[37]);
+					
+					// 
+					//System.out.println("## JYGY ==> " + _jygy);
+				}
+			} 
 		}
 		
 		rtnVal = _jygy;
