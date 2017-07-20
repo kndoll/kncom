@@ -18,6 +18,7 @@ import com.google.gson.Gson;
 import kr.co.kncom.domain.AuctionList;
 import kr.co.kncom.repository.AuctionListRepository;
 import kr.co.kncom.service.AuctionListService;
+import kr.co.kncom.util.StringUtil;
 
 @Controller
 public class AuctionListController {
@@ -48,17 +49,23 @@ public class AuctionListController {
 			auctionListVO.setAddress(new String(tmpData.getAddress().getBytes("iso-8859-1"), "euc-kr"));
 			auctionListVO.setGubun(new String(tmpData.getGubun().getBytes("iso-8859-1"), "euc-kr"));
 			auctionListVO.setResult(new String(tmpData.getResult().getBytes("iso-8859-1"), "euc-kr"));
-
-			if (tmpData.getAppraisedvalue().length() > 0) {
+			
+			if (tmpData.getAppraisedvalue().length() > 0 && StringUtil.isStringDouble(tmpData.getAppraisedvalue())) {
 				auctionListVO.setAppraisedvalue(String.format("%,d", Long.parseLong(tmpData.getAppraisedvalue())/10000));
+			} else {
+				continue;
 			}
 
-			if (tmpData.getLowestvalue().length() > 0) {
+			if (tmpData.getLowestvalue().length() > 0 && StringUtil.isStringDouble(tmpData.getLowestvalue())) {
 				auctionListVO.setLowestvalue(String.format("%,d", Long.parseLong(tmpData.getLowestvalue())/10000));
+			} else {
+				continue;
 			}
 
-			if (tmpData.getSalevalue().length() > 0) {
+			if (tmpData.getSalevalue().length() > 0 && StringUtil.isStringDouble(tmpData.getSalevalue())) {
 				auctionListVO.setSalevalue(String.format("%,d", Long.parseLong(tmpData.getSalevalue())/10000));
+			} else {
+				continue;
 			}
 
 			auctionList.add(auctionListVO);

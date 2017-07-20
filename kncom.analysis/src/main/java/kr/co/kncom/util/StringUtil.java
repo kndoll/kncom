@@ -126,4 +126,19 @@ public class StringUtil {
 		System.out.println("#############################");
 	}
 	
+	/**
+	 * 문자열이 숫자타입인지 확인
+	 * @param s
+	 * @return
+	 */
+	public static boolean isStringDouble(String s) {
+		try {
+		    Double.parseDouble(s);
+		    return true;
+		} catch (NumberFormatException e) {
+			System.out.println("## " + s + " is not number format!!!");
+		    return false;
+		}
+	}
+	
 }
