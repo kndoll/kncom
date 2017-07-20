@@ -16,6 +16,36 @@
       <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
+    <style>
+	/* 로딩*/
+	#loading {
+		height: 100%;
+		left: 0px;
+		position: fixed;
+		_position:absolute; 
+		top: 0px;
+		width: 100%;
+		filter:alpha(opacity=50);
+		-moz-opacity:0.5;
+		opacity : 0.5;
+	}
+
+	.loading {
+		background-color: white;
+		z-index: 199;
+	}
+
+	#loading_img{
+		position:absolute; 
+		top:50%;
+		left:50%;
+		height:35px;
+		margin-top:-75px;	//	이미지크기
+		margin-left:-75px;	//	이미지크기
+		z-index: 200;
+	}
+
+</style>
   </head>
   <body>
     <h1></h1>
@@ -191,6 +221,15 @@
     		$("input:checkbox[id='chkIndex']").each(function(){
 				alert(this.val());
 			});
+    		
+    		var loading = $('<div id="loading" class="loading"></div><img id="loading_img" alt="loading" src="/images/viewLoading.gif" />').appendTo(document.body).hide();
+    		
+    		$(window).ajaxStart(function(){
+    			loading.show();
+    		}).ajaxStop(function(){
+    			loading.hide();
+    		});
+
     	});
     	
     	// 시세정보 요청
