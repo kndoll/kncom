@@ -50,15 +50,15 @@ public class AuctionListController {
 			auctionListVO.setResult(new String(tmpData.getResult().getBytes("iso-8859-1"), "euc-kr"));
 
 			if (tmpData.getAppraisedvalue().length() > 0) {
-				auctionListVO.setAppraisedvalue(String.format("%,d", (int)Double.parseDouble(tmpData.getAppraisedvalue()) / 10000));
+				auctionListVO.setAppraisedvalue(String.format("%,d", Long.parseLong(tmpData.getAppraisedvalue())/10000));
 			}
 
 			if (tmpData.getLowestvalue().length() > 0) {
-				auctionListVO.setLowestvalue(String.format("%,d", (int)Double.parseDouble(tmpData.getLowestvalue()) / 10000));
+				auctionListVO.setLowestvalue(String.format("%,d", Long.parseLong(tmpData.getLowestvalue())/10000));
 			}
 
 			if (tmpData.getSalevalue().length() > 0) {
-				auctionListVO.setSalevalue(String.format("%,d",(int)Double.parseDouble(tmpData.getSalevalue()) / 10000));
+				auctionListVO.setSalevalue(String.format("%,d", Long.parseLong(tmpData.getSalevalue())/10000));
 			}
 
 			auctionList.add(auctionListVO);
