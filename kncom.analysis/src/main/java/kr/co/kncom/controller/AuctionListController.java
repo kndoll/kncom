@@ -1,11 +1,11 @@
 package kr.co.kncom.controller;
 
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,65 +15,33 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.google.gson.Gson;
 
+import kr.co.kncom.config.ServiceConfig;
 import kr.co.kncom.domain.AuctionList;
 import kr.co.kncom.repository.AuctionListRepository;
 import kr.co.kncom.service.AuctionListService;
-import kr.co.kncom.util.StringUtil;
 
 @Controller
 public class AuctionListController {
-
-	AuctionListService auctionService = new AuctionListService();
+	
 	@Autowired
 	AuctionListRepository auctionListRepository;
+	
+	AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(ServiceConfig.class);
+	AuctionListService auctionListService = context.getBean(AuctionListService.class);
+	  
 	Gson gson = new Gson();
 
 	@RequestMapping("/auctionAnalysis")
 	public String auctionAnalysis(Model model, @RequestParam(value = "bidDate", defaultValue = "12.01") String bidDate)
 			throws UnsupportedEncodingException {
 
-		System.out.println("## B I D - D A T E ==> " + bidDate);
-
-		// 임시 캐릭터 셋 변경
 		List<AuctionList> _auctionList = auctionListRepository.findBySaledayStartingWithOrderBySaledayAsc(bidDate);
-		List<AuctionList> auctionList = new ArrayList<AuctionList>();
-
-		AuctionList auctionListVO = null;
-		for (AuctionList tmpData : _auctionList) {
-			auctionListVO = new AuctionList();
-
-			// 데이터 변환 - service layer로 이동해야 함.
-			auctionListVO = tmpData;
-
-			auctionListVO.setInd(new String(tmpData.getInd().getBytes("iso-8859-1"), "euc-kr"));
-			auctionListVO.setAddress(new String(tmpData.getAddress().getBytes("iso-8859-1"), "euc-kr"));
-			auctionListVO.setGubun(new String(tmpData.getGubun().getBytes("iso-8859-1"), "euc-kr"));
-			auctionListVO.setResult(new String(tmpData.getResult().getBytes("iso-8859-1"), "euc-kr"));
-			
-			if (tmpData.getAppraisedvalue().length() > 0 && StringUtil.isStringDouble(tmpData.getAppraisedvalue())) {
-				auctionListVO.setAppraisedvalue(String.format("%,d", Long.parseLong(tmpData.getAppraisedvalue())/10000));
-			} else {
-				continue;
-			}
-
-			if (tmpData.getLowestvalue().length() > 0 && StringUtil.isStringDouble(tmpData.getLowestvalue())) {
-				auctionListVO.setLowestvalue(String.format("%,d", Long.parseLong(tmpData.getLowestvalue())/10000));
-			} else {
-				continue;
-			}
-
-			if (tmpData.getSalevalue().length() > 0 && StringUtil.isStringDouble(tmpData.getSalevalue())) {
-				auctionListVO.setSalevalue(String.format("%,d", Long.parseLong(tmpData.getSalevalue())/10000));
-			} else {
-				continue;
-			}
-
-			auctionList.add(auctionListVO);
-		}
+		// 데이터를 정제한다.
+		List<AuctionList> auctionList = auctionListService.refineAuctionListData(_auctionList);
 
 		model.addAttribute("bidDate", bidDate);
 		model.addAttribute("totalCnt", auctionListRepository.countBySaledayStartingWith(bidDate));
-		model.addAttribute("auctionList", auctionListRepository.findBySaledayStartingWithOrderBySaledayAsc(bidDate));
+		model.addAttribute("auctionList", auctionList);
 
 		return "auctionAnalysis";
 	}
@@ -81,7 +49,7 @@ public class AuctionListController {
 	@RequestMapping(value = "/auctionMarketPrice", method = RequestMethod.GET)
 	public @ResponseBody String auctionMarketPrice(Model model, @RequestParam HashMap<String, String> params) {
 
-		return auctionService.getMarketPriceList(params);
+		return auctionListService.getMarketPriceList(params);
 	}
 
 }

@@ -20,21 +20,5 @@ public class AuctionListServiceTest {
 		System.out.println("### auctionService ==> " + auctionService.getMarketPriceList(params));
 	}
 	
-	@Test
-	public void getAuctionListTest() {
-		
-		/*
-		AuctionListService auctionListService = new AuctionListService();
-		
-		List<AuctionList> testResult = auctionListService.getAuctionList("12.01");
-		
-		if (testResult != null) {
-			for (AuctionList loop : testResult) {
-				System.out.println("## TEST DATA ==> " + loop.getAddress());
-			}
-		}
-		*/
-		
-	}
 	
 }

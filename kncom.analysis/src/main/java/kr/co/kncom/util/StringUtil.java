@@ -136,7 +136,7 @@ public class StringUtil {
 		    Double.parseDouble(s);
 		    return true;
 		} catch (NumberFormatException e) {
-			System.out.println("## " + s + " is not number format!!!");
+			System.out.println("## '" + s + "' is not number format!!!");
 		    return false;
 		}
 	}

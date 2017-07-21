@@ -33,7 +33,7 @@ public class MarketPriceDao {
 	private final String djgiFileName = "djgi.dat";
 	
 	private Gson gson = new Gson();
-
+	
 	public List<MarketPriceVO> getMarketPriceList(Map params) {
 
 		String index = params.get("index").toString();
