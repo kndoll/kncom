@@ -4,9 +4,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Test;
+import org.springframework.stereotype.Service;
 
+@Service
 public class AuctionListServiceTest {
-
+	
 	@Test
 	public void getMarketPriceListTest() {
 		
@@ -19,6 +21,5 @@ public class AuctionListServiceTest {
 		
 		System.out.println("### auctionService ==> " + auctionService.getMarketPriceList(params));
 	}
-	
 	
 }
