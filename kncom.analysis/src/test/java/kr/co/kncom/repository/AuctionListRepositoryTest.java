@@ -14,7 +14,7 @@ import kr.co.kncom.service.AutowireService;
 public class AuctionListRepositoryTest {
 
 	@Autowired
-	AuctionListRepository auctionListRepository;
+	private AuctionListRepository auctionListRepository;
 	
 	@Autowired
 	AutoWireRepository autowireRepository;
@@ -31,9 +31,7 @@ public class AuctionListRepositoryTest {
 		Long count = auctionListRepository.countBySaledayStartingWith("12.01");
 		
 		System.out.println("## count ==> " + count);
-		
 		System.out.println("## count2 ==> " + autowireRepository.count());
-		
 		System.out.println("## marketPriceDao Instance ==> " + marketPriceDao);
 		
 	}
