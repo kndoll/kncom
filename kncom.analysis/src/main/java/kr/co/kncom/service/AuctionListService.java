@@ -20,7 +20,7 @@ import kr.co.kncom.vo.MarketPriceVO;
 public class AuctionListService {
 
 	AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(DaoConfig.class);
-	private MarketPriceDao marketConditionDao = context.getBean(MarketPriceDao.class);
+	private MarketPriceDao marketPriceDao = context.getBean(MarketPriceDao.class);
 
 	public List<AuctionList> refineAuctionListData(List<AuctionList> auctionData) throws UnsupportedEncodingException {
 		
@@ -69,7 +69,7 @@ public class AuctionListService {
 		Gson gson = new Gson();
 
 		// obj -> json 변환
-		marketPriceList = marketConditionDao.getMarketPriceList(params);
+		marketPriceList = marketPriceDao.getMarketPriceList(params);
 		String jsonStr = gson.toJson(marketPriceList);
 
 		return jsonStr;

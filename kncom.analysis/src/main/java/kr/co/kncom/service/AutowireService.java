@@ -3,15 +3,15 @@ package kr.co.kncom.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import kr.co.kncom.repository.AuctionListRepository;
+import kr.co.kncom.repository.AutoWireRepository;
 
 @Service
 public class AutowireService {
 	
 	@Autowired
-	private AuctionListRepository auctionListRepository;
+	private AutoWireRepository autoWireRepository;
 	
-	public void printAutowired() {
-		System.out.println("## A U T O - W I R E D - S E R V I C E : " + auctionListRepository);
+	public void select() {
+		System.out.println(autoWireRepository.count());
 	}
 }
