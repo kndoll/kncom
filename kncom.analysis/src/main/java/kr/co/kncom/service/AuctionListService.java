@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +14,7 @@ import com.google.gson.Gson;
 import kr.co.kncom.config.DaoConfig;
 import kr.co.kncom.dao.MarketPriceDao;
 import kr.co.kncom.domain.AuctionList;
+import kr.co.kncom.repository.AuctionListRepository;
 import kr.co.kncom.util.StringUtil;
 import kr.co.kncom.vo.MarketPriceVO;
 
@@ -21,16 +23,20 @@ public class AuctionListService {
 
 	AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(DaoConfig.class);
 	private MarketPriceDao marketPriceDao = context.getBean(MarketPriceDao.class);
-
-	public List<AuctionList> refineAuctionListData(List<AuctionList> auctionData) throws UnsupportedEncodingException {
+	
+	@Autowired
+	AuctionListRepository auctionListRepository;
+	
+	public List<AuctionList> getAuctionListData(String bidDate) throws UnsupportedEncodingException {
 		
 		AuctionList auctionListVO = null;
 		List<AuctionList> rtnAuctionList = new ArrayList<AuctionList>();
 		
+		List<AuctionList> auctionData = auctionListRepository.findBySaledayStartingWithOrderBySaledayAsc(bidDate);
+		
 		for (AuctionList tmpData : auctionData) {
 			auctionListVO = new AuctionList();
 
-			// 데이터 변환 - service layer로 이동해야 함.
 			auctionListVO = tmpData;
 
 			auctionListVO.setInd(new String(tmpData.getInd().getBytes("iso-8859-1"), "euc-kr"));
@@ -63,7 +69,7 @@ public class AuctionListService {
 		return rtnAuctionList;
 	}
 
-	public String getMarketPriceList(Map params) {
+	public String getMarketPriceList(Map<String, String> params) {
 
 		List<MarketPriceVO> marketPriceList = new ArrayList<MarketPriceVO>();
 		Gson gson = new Gson();
