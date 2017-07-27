@@ -1,4 +1,4 @@
-package kr.co.kncom.vo;
+package kr.co.kncom.domain;
 
 public class AreaRatioVO {
 
