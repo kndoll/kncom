@@ -40,7 +40,6 @@ public class AuctionListServiceTest {
 	public void insertAuctionListTest() {
 		
 		System.out.println("## auctionListService Instance ==> " + auctionListService);
-		
 		auctionListService.insertAuctionList();
 	}
 	
@@ -52,5 +51,4 @@ public class AuctionListServiceTest {
 		int tmp2 = sidogusRepository.findDongCodeSQL("대치동", tmp, 1);
 		System.out.println("##tmp2 ==> " + tmp2);
 	}
-	
 }

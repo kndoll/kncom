@@ -51,6 +51,7 @@ public class AuctionList2 {
 	@Column(length=8)
 	private String result;
 	
+	@Column(columnDefinition = "TEXT")
 	private String attention;
 	
 	@Column(nullable=false)

@@ -104,71 +104,75 @@ public class AuctionListService {
 	 */
 	public void insertAuctionList() {
 
-		//final String fileDirPrefix = "P:\\경매가경기도\\dat\\";
-		final String fileDirPrefix = "P:\\error\\";
-		final String backDirPrefix = "P:\\error2nd\\";
-		AuctionList2 auctionList = new AuctionList2();
+		final String[] fileDirPrefixArr = {"P:\\서울\\", "P:\\경매가경기도\\dat"};
+		final String[] backDirPrefixArr = {"P:\\서울_오류데이터\\", "P:\\경기도_오류데이터\\"};
 		
-		List<String> fileList = FileUtil.getXmlFileNameList(fileDirPrefix);
-
-		String _tmpFileStr = null;
-		Document _doc = null;
-		for (String _str : fileList) {
-
-			System.out.println("## F I L E ==> " + _str);
-
-			try {
-				_tmpFileStr = FileUtil.readFileToString(fileDirPrefix + _str);
-				_doc = Jsoup.parseBodyFragment(_tmpFileStr);
-
-				parseAuctionHtml(_doc, _str.split("\\.")[0]);
-
-			} catch (IOException e) {
+		AuctionList2 auctionList2 = null;
+		List<String> fileList = null;
+		
+		for (int i=0; i < fileDirPrefixArr.length; i++) {
+			fileList = FileUtil.getXmlFileNameList(fileDirPrefixArr[i]);
+	
+			String _tmpFileStr = null;
+			Document _doc = null;
+			
+			for (String _str : fileList) {
 				
-				e.printStackTrace();
+				System.out.println("## F I L E ==> " + _str);
+				auctionList2 = new AuctionList2();
 				
-				// 오류 파일 복사
-				FileInputStream inputStream;
 				try {
-					inputStream = new FileInputStream(fileDirPrefix+_str);
+					_tmpFileStr = FileUtil.readFileToString(fileDirPrefixArr[i] + _str);
+					_doc = Jsoup.parseBodyFragment(_tmpFileStr);
+	
+					auctionList2 = parseAuctionHtml(_doc, _str.split("\\.")[0]);
 					
-					FileOutputStream outputStream = new FileOutputStream(backDirPrefix+_str);
+					// 데이터 입력
+					auctionListRepository2.save(auctionList2);
 					
-					FileChannel fcin =  inputStream.getChannel();
-					FileChannel fcout = outputStream.getChannel();
+				} catch (Exception e) {
 					
-					long size = fcin.size();
-					fcin.transferTo(0, size, fcout);
+					e.printStackTrace();
 					
-					fcout.close();
-					fcin.close();
+					// 오류 파일 복사
+					FileInputStream inputStream;
+					try {
+						inputStream = new FileInputStream(fileDirPrefixArr[i]+_str);
+						FileOutputStream outputStream = new FileOutputStream(backDirPrefixArr[i]+_str);
+						
+						FileChannel fcin =  inputStream.getChannel();
+						FileChannel fcout = outputStream.getChannel();
+						
+						long size = fcin.size();
+						fcin.transferTo(0, size, fcout);
+						
+						fcout.close();
+						fcin.close();
+						
+						outputStream.close();
+						inputStream.close();
+						
+					} catch (FileNotFoundException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}  
 					
-					outputStream.close();
-					inputStream.close();
-					
-				} catch (FileNotFoundException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}        
+					continue;
+				}
 			}
-
 		}
-
-		// 데이터 입력
-		// auctionListRepository2.save(auctionList);
-
 	}
 
-	private AuctionList2 parseAuctionHtml(Document doc, String index) throws IOException {
+	private AuctionList2 parseAuctionHtml(Document doc, String index) throws Exception {
 
 		AuctionList2 auctionList2 = new AuctionList2();
 
 		Element element = null;
 		
-		//try {
+		try {
 
 			// element = doc.select("title").first();
 			// 인덱스
@@ -217,16 +221,28 @@ public class AuctionListService {
 				} else { // 경기도
 					si_ind = 2;
 					// split 결과가 4이면 구 포함 경기도 고양시 덕양구 고양동
-					if (_address[2].endsWith("동")) {
+					if (_address[2].endsWith("구")) {
+						sidogu = _address[0] + " " + _address[1] + " " + _address[2];
+						dong = _address[3] + " " + _address[4];
+						
+						_arrBunji = _address[5].split("-");
+						
+					} else if (_address[2].endsWith("동")) {
 						sidogu = _address[0] + " " + _address[1];
 						dong = _address[2];
 						
 						_arrBunji = _address[3].split("-");
 					} else if(_address[2].endsWith("읍") || _address[2].endsWith("면")) { // 읍이 있는 경우
 						sidogu = _address[0] + " " + _address[1];
-						dong = _address[2] + " " + _address[3];
 						
-						_arrBunji = _address[4].split("-");
+						if (StringUtil.isStringDouble(_address[3].split("-")[0])) {
+							dong = _address[2];
+							_arrBunji = _address[3].split("-");
+						} else {
+							dong = _address[2] + " " + _address[3];
+							_arrBunji = _address[4].split("-");
+						}
+						
 					} else {
 						sidogu = _address[0] + " " + _address[1] + " " + _address[2];
 						dong = _address[3];
@@ -237,24 +253,17 @@ public class AuctionListService {
 				}
 				
 				if (_arrBunji.length > 1) {
-					if (!StringUtil.isStringDouble(_arrBunji[0])) {
-						System.out.println("### 번지가 숫자타입이 아님!!!!");
-						return null;
-					} else {
 						bunji1 = Integer.parseInt(_arrBunji[0].replaceAll("(^\\p{Z}+|\\p{Z}+$)", ""));
 						bunji2 = Integer.parseInt(_arrBunji[1].replaceAll("(^\\p{Z}+|\\p{Z}+$)", ""));
-					}
-					
 				} else {
-					if (StringUtil.isStringDouble(_arrBunji[0])) {
 						bunji1 = Integer.parseInt(_arrBunji[0].replaceAll("(^\\p{Z}+|\\p{Z}+$)", ""));
-					} else {
-						System.out.println("### 번지가 숫자타입이 아님!!!!");
-						return null;
-					}
 				}
 				
-				sidogu = sidogu.replaceAll("경기", "경기도");
+				sidogu = sidogu.replaceAll("경기", "경기도").replaceAll("경기도 포천군", "경기도 포천시");
+				
+				if (sidogu.equals("경기도 동두천시") && dong.equals("탑동")) {
+					dong = "탑동동";
+				}
 				
 				System.out.println("## sidogu ==> " + sidogu);
 				System.out.println("## dong ==> " + dong);
@@ -371,30 +380,21 @@ public class AuctionListService {
 			auctionList2.setSidogus_ind(sidogusRepository.findSidonguCodeSQL(sidogu, si_ind));
 			System.out.println("sidonggus ==> " + auctionList2.getSidogus_ind());
 			
-			int _dong = sidogusRepository.findDongCodeSQL(dong, auctionList2.getSidogus_ind(), si_ind);
-			if (_dong == -1) {
-				System.out.println("## 주소매칭이 안됨!!!");
-				return null;
-			} else {
-				
-				auctionList2.setDongs_ind(_dong);
-				System.out.println("dong ==> " + _dong);
-				
-			}
+			auctionList2.setDongs_ind(sidogusRepository.findDongCodeSQL(dong, auctionList2.getSidogus_ind(), si_ind));
+			System.out.println("dong ==> " + auctionList2.getDongs_ind());
+			
 			// 번지 추가
 			auctionList2.setBunji1(bunji1);
 			auctionList2.setBunji2(bunji2);
 			
 			System.out.println("############################################################");
 			
-			// 입력
-			auctionListRepository2.save(auctionList2);
-			
-		//} catch (Exception e) {
-			//throw new IOException();
-		//}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new Exception();
+		}
 		
-		return null;
+		return auctionList2;
 	}
 
 	/**
@@ -444,7 +444,7 @@ public class AuctionListService {
 			String[] _area = srcStr.split("중");
 			
 			float allArea = Float.parseFloat(_area[0].replaceAll("[전체㎡★]", "").replaceAll("(^\\p{Z}+|\\p{Z}+$)", ""));
-			float jibunArea = Float.parseFloat(_area[1].split("\\(")[0].replaceAll("[지분㎡★]", "").replaceAll("(^\\p{Z}+|\\p{Z}+$)", ""));
+			float jibunArea = Float.parseFloat(_area[1].split("\\(")[0].replaceAll("[지분㎡★\\,]", "").replaceAll("(^\\p{Z}+|\\p{Z}+$)", ""));
 			
 			System.out.println("## allArea ==> " + allArea + " : " + "## jibunArea ==> " + jibunArea);
 			rtnRate = jibunArea/allArea;
@@ -467,9 +467,7 @@ public class AuctionListService {
 		
 		// 제시외 존재 여부
 		if (existJesi) {
-			
 			rtnArea = Float.parseFloat(srcArea.split("제시외")[0].split("㎡")[0].replaceAll("[전체㎡★\\,]", "").replaceAll("(^\\p{Z}+|\\p{Z}+$)", ""));
-			
 		} else {
 			boolean existJibun = srcArea.contains("지분");
 			
@@ -478,7 +476,8 @@ public class AuctionListService {
 				rtnArea = Float.parseFloat(srcArea.split("중")[0].replaceAll("[전체㎡★\\,]", "").replaceAll("(^\\p{Z}+|\\p{Z}+$)", ""));
 				
 			} else {
-				rtnArea = Float.parseFloat(srcArea.replaceAll("[전체㎡★\\,]", "").replaceAll("(^\\p{Z}+|\\p{Z}+$)", "").substring(0, 5));
+				//rtnArea = Float.parseFloat(srcArea.replaceAll("[전체㎡★\\,]", "").replaceAll("(^\\p{Z}+|\\p{Z}+$)", "").substring(0, 5));
+				rtnArea = Float.parseFloat(srcArea.split("㎡")[0].replaceAll("[전체㎡★\\,]", "").replaceAll("(^\\p{Z}+|\\p{Z}+$)", ""));
 			}
 		}
 		
