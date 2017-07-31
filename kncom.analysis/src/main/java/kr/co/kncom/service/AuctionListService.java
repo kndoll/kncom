@@ -118,7 +118,7 @@ public class AuctionListService {
 			
 			for (String _str : fileList) {
 				
-				System.out.println("## F I L E ==> " + _str);
+				//System.out.println("## F I L E ==> " + _str);
 				auctionList2 = new AuctionList2();
 				
 				try {
@@ -177,7 +177,7 @@ public class AuctionListService {
 			// element = doc.select("title").first();
 			// 인덱스
 			auctionList2.setInd(index);
-			System.out.println("## index ==> " + index);
+			//System.out.println("## index ==> " + index);
 	
 			// 주소
 			element = doc.select(".td_1").get(0);
@@ -190,7 +190,7 @@ public class AuctionListService {
 			} else {
 				address = element.text();
 			}
-			System.out.println("## address ==> " + address);
+			//System.out.println("## address ==> " + address);
 			
 			auctionList2.setAddress(address);
 			
@@ -208,7 +208,7 @@ public class AuctionListService {
 				// 주소파싱
 				String[] _address = element.text().split(" ");
 				
-				System.out.println("## 주소 파싱 ==> " + _address.length);
+				//System.out.println("## 주소 파싱 ==> " + _address.length);
 				
 				if (_address[0].contains("서울")) {
 					si_ind = 1;
@@ -265,68 +265,68 @@ public class AuctionListService {
 					dong = "탑동동";
 				}
 				
-				System.out.println("## sidogu ==> " + sidogu);
-				System.out.println("## dong ==> " + dong);
-				System.out.println("## bunji1 ==> " + bunji1);
-				System.out.println("## bunji2 ==> " + bunji2);
+				//System.out.println("## sidogu ==> " + sidogu);
+				//System.out.println("## dong ==> " + dong);
+				//System.out.println("## bunji1 ==> " + bunji1);
+				//System.out.println("## bunji2 ==> " + bunji2);
 			}
 		
 		
 			// 구분
 			element = doc.select(".td_1").get(3);
-			System.out.println("## gubun ==> " + element.text());
+			//System.out.println("## gubun ==> " + element.text());
 			auctionList2.setGubun(element.text());
 
 			// 매각일
 			element = doc.select(".td_1").get(5);
-			System.out.println("### 매각정보 ===> " + element.text());
+			//System.out.println("### 매각정보 ===> " + element.text());
 			
 			// 매각일 존재 여부 체크
 			String[] _saleDayArr = element.text().split("\\.");
 			if (_saleDayArr.length > 1) {
 				// substr로 날짜만 우선 가져온다
 				auctionList2.setSaleDay(StringUtil.convertStrToDate(element.text().replaceAll("[★]", "").substring(0, 8)));
-				System.out.println("## saleday ==> " + StringUtil.convertStrToDate(element.text().replaceAll("[★]", "").substring(0, 8)));
+				//System.out.println("## saleday ==> " + StringUtil.convertStrToDate(element.text().replaceAll("[★]", "").substring(0, 8)));
 			} else if (element.text().contains("집행정지")) {
 				// 결과
 				auctionList2.setResult(element.text());
-				System.out.println("## result ==> " + element.text());
+				//System.out.println("## result ==> " + element.text());
 			}
 			
 			// 매각가 - 취하- 기각
-			System.out.println("## saleValue ==> " + convertPriceDayToPriceOrder(element.text()));
+			//System.out.println("## saleValue ==> " + convertPriceDayToPriceOrder(element.text()));
 			auctionList2.setSaleValue(convertPriceDayToPriceOrder(element.text()));
 
 			// 감정가
 			element = doc.select(".td_1").get(6);
-			System.out.println("## source data ==> " + element.text());
+			//System.out.println("## source data ==> " + element.text());
 			auctionList2.setAppraisedValue(convertPricePriceToOtherOrder(element.text()));
-			System.out.println("## appraisedValue ==> " + convertPricePriceToOtherOrder(element.text()));
+			//System.out.println("## appraisedValue ==> " + convertPricePriceToOtherOrder(element.text()));
 			
 			//종국일자
 			element = doc.select(".td_1").get(8);
 			
-			System.out.println("## element ==> " + element.text());
+			//System.out.println("## element ==> " + element.text());
 			if (element.text().length() > 1) {
 				if (element.text().contains("미정")){
 					// 결과
 					auctionList2.setResult(element.text());
-					System.out.println("## result ==> " + element.text());
+					//System.out.println("## result ==> " + element.text());
 				} else if (element.text().startsWith("..")) {
 					// 결과
 					auctionList2.setResult(element.text().substring(3));
-					System.out.println("## result ==> " + element.text().substring(3));
+					//System.out.println("## result ==> " + element.text().substring(3));
 				} else {
 					auctionList2.setCloseDay(StringUtil.convertStrToDate(element.text().replaceAll("[★]", "").substring(0, 8)));
-					System.out.println("## closeDay ==> " + StringUtil.convertStrToDate(element.text().replaceAll("[★]", "").substring(0, 8)));
+					//System.out.println("## closeDay ==> " + StringUtil.convertStrToDate(element.text().replaceAll("[★]", "").substring(0, 8)));
 					
 					// 결과
 					if(element.text().substring(9).contains("원")) {
 						auctionList2.setResult("진행중");
-						System.out.println("## result ==> " + "진행중");	
+						//System.out.println("## result ==> " + "진행중");	
 					} else {
 						auctionList2.setResult(element.text().substring(9));
-						System.out.println("## result ==> " + element.text().substring(9));
+						//System.out.println("## result ==> " + element.text().substring(9));
 					}
 				}
 			}
@@ -334,43 +334,43 @@ public class AuctionListService {
 			// 최저가
 			element = doc.select(".td_1").get(9);
 			auctionList2.setLowestValue(convertPricePriceToOtherOrder(element.text()));
-			System.out.println("## lowestValue ==> " + convertPricePriceToOtherOrder(element.text()));
+			//System.out.println("## lowestValue ==> " + convertPricePriceToOtherOrder(element.text()));
 
 			// 토지면적
 			element = doc.select(".td_1").get(10);
 			auctionList2.setLandArea(extractArea(element.text()));
-			System.out.println("## landArea ==> " + extractArea(element.text()));
+			//System.out.println("## landArea ==> " + extractArea(element.text()));
 			
 			// 토지지분비율
 			auctionList2.setLandRate(calcJibunRate(element.text()));
-			System.out.println("## landAreaRate ==> " + calcJibunRate(element.text()));
+			//System.out.println("## landAreaRate ==> " + calcJibunRate(element.text()));
 			
 			// 개시일자
 			element = doc.select(".td_1").get(11);
 			if (element.text().length() > 1) {
 				auctionList2.setOpenDay(StringUtil.convertStrToDate(element.text().replaceAll("[★]", "").substring(0, 8)));
-				System.out.println("## openDay ==> " + StringUtil.convertStrToDate(element.text().replaceAll("[★]", "").substring(0, 8)));
+				//System.out.println("## openDay ==> " + StringUtil.convertStrToDate(element.text().replaceAll("[★]", "").substring(0, 8)));
 			}
 			// 건물면적
 			element = doc.select(".td_1").get(13);
 			auctionList2.setBuildingArea(extractArea(element.text()));
-			System.out.println("## buildingArea ==> " + extractArea(element.text()));
+			//System.out.println("## buildingArea ==> " + extractArea(element.text()));
 			
 			// 건물지분비율
 			auctionList2.setBuildingRate(calcJibunRate(element.text()));
-			System.out.println("## buildAreaRate ==> " + calcJibunRate(element.text()));
+			//System.out.println("## buildAreaRate ==> " + calcJibunRate(element.text()));
 			
 			// 배당종기일
 			element = doc.select(".td_1").get(14);
 			if (element.text().length() > 1) {
 				auctionList2.setAllotDay(StringUtil.convertStrToDate(element.text().replaceAll("[★]", "").substring(0, 8)));
-				System.out.println("## AllotDay ==> " + StringUtil.convertStrToDate(element.text().replaceAll("[★]", "").substring(0, 8)));
+				//System.out.println("## AllotDay ==> " + StringUtil.convertStrToDate(element.text().replaceAll("[★]", "").substring(0, 8)));
 			}
 			
 			element = doc.select(".td_1").get(16);
 			if (!element.text().contains("5분이상")){
 				auctionList2.setAttention(element.text());
-				System.out.println("## 주의사항 ==> " + element.text());
+				//System.out.println("## 주의사항 ==> " + element.text());
 			}
 			
 			// 시, 군구 코드 찾아서 입력
@@ -378,16 +378,16 @@ public class AuctionListService {
 			auctionList2.setSi_ind(si_ind);
 			// 구코드
 			auctionList2.setSidogus_ind(sidogusRepository.findSidonguCodeSQL(sidogu, si_ind));
-			System.out.println("sidonggus ==> " + auctionList2.getSidogus_ind());
+			//System.out.println("sidonggus ==> " + auctionList2.getSidogus_ind());
 			
 			auctionList2.setDongs_ind(sidogusRepository.findDongCodeSQL(dong, auctionList2.getSidogus_ind(), si_ind));
-			System.out.println("dong ==> " + auctionList2.getDongs_ind());
+			//System.out.println("dong ==> " + auctionList2.getDongs_ind());
 			
 			// 번지 추가
 			auctionList2.setBunji1(bunji1);
 			auctionList2.setBunji2(bunji2);
 			
-			System.out.println("############################################################");
+			//System.out.println("############################################################");
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -446,7 +446,7 @@ public class AuctionListService {
 			float allArea = Float.parseFloat(_area[0].replaceAll("[전체㎡★]", "").replaceAll("(^\\p{Z}+|\\p{Z}+$)", ""));
 			float jibunArea = Float.parseFloat(_area[1].split("\\(")[0].replaceAll("[지분㎡★\\,]", "").replaceAll("(^\\p{Z}+|\\p{Z}+$)", ""));
 			
-			System.out.println("## allArea ==> " + allArea + " : " + "## jibunArea ==> " + jibunArea);
+			//System.out.println("## allArea ==> " + allArea + " : " + "## jibunArea ==> " + jibunArea);
 			rtnRate = jibunArea/allArea;
 		}
 

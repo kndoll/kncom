@@ -11,24 +11,30 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.json.JSONException;
-
 public class FileUtil {
 	
 	/**
-	 * 파일 경로에 있는 xml 파일을 json으로 변환하여 리턴한다.
+	 * 파일 경로에 있는 xml 파일을 리턴한다.
 	 * 
 	 * @param filePath
 	 * @return
 	 * @throws IOException
-	 * @throws JSONException
 	 */
-	public static String readFileToString(String filePath) throws IOException {
-		return readFileToStringBuffer(filePath).toString();
+	public static String readFileToString(String filePath) {
+		
+		String rtnVal = null;
+		
+		try {
+			rtnVal = readFileToStringBuffer(filePath).toString();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return rtnVal;
 	}
 	
 	/**
-	 * 해당 경로의 파일을 라인별로 읽어 LIST로 리턴한다.
+	 * 해당 경로의 파일을 라인별로 읽어 구분자로 split 후, LIST로 리턴한다.
 	 * @param filePath
 	 * @return
 	 */
@@ -104,5 +110,18 @@ public class FileUtil {
 		//JSONObject jsonObject = XML.toJSONObject(buffer.toString(), true);
 
 		return buffer;
+	}
+	
+	/**
+	 * 파일 존재 유무를 리턴한다.
+	 * 
+	 * @param filePath
+	 * @return [true|false]
+	 */
+	public static boolean isExistFile(String filePath) {
+		
+		File file = new File(filePath);
+		
+		return file.exists();
 	}
 }

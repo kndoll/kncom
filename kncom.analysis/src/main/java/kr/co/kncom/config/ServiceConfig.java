@@ -3,6 +3,7 @@ package kr.co.kncom.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import kr.co.kncom.service.AreaRatioService;
 import kr.co.kncom.service.AuctionListService;
 
 @Configuration
@@ -12,4 +13,10 @@ public class ServiceConfig {
 	public AuctionListService auctionListService() {
 		return new AuctionListService(); 
 	}
+	
+	@Bean
+	public AreaRatioService areaRatioService() {
+		return new AreaRatioService();
+	}
+	
 }

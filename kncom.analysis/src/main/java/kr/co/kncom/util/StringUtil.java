@@ -138,14 +138,14 @@ public class StringUtil {
 	 */
 	public static boolean isStringDouble(String s) {
 		boolean rtnval = false;
-		
+
 		try {
 			Double.parseDouble(s);
 			rtnval = true;
 		} catch (NumberFormatException e) {
 			System.out.println("## '" + s + "' is not number format!!!");
 		}
-		
+
 		return rtnval;
 	}
 
@@ -160,11 +160,10 @@ public class StringUtil {
 
 		Date to = null;
 		String[] _arr = fromDate.split("\\.");
-		
+
 		String from = "20" + _arr[0] + "-" + _arr[1] + "-" + _arr[2];
 
 		SimpleDateFormat convertFormat = new SimpleDateFormat("yyyy-MM-dd");
-
 
 		try {
 			to = convertFormat.parse(from);
@@ -174,22 +173,37 @@ public class StringUtil {
 
 		return to;
 	}
-	
+
 	/**
 	 * euckr 로 캐릭터셋을 변환한다.
+	 * 
 	 * @param srcStr
 	 * @return
 	 */
 	public static String convertUtf8ToEuckr(String srcStr) {
-		
+
 		String rtnStr = null;
-		
+
 		try {
 			rtnStr = new String(srcStr.getBytes("utf-8"), "euckr");
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
-		
+
 		return rtnStr;
+	}
+
+	public static void printIndexData(String[] arr, String title) {
+		
+		System.out.println("##############" + title + "##############");
+		
+		int i = 0;
+		for (String _str : arr) {
+			System.out.println("## index[" + i + "] " + " : " + _str);
+			i++;
+		}
+		
+		System.out.println("########################################");
+		
 	}
 }

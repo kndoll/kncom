@@ -195,7 +195,7 @@ public class MarketPriceDao {
 
 					}
 
-				} catch (IOException | JSONException e) {
+				} catch (JSONException e) {
 					e.printStackTrace();
 				}
 			}
