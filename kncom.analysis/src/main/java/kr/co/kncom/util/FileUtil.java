@@ -52,7 +52,6 @@ public class FileUtil {
 				rtnList.add(strLine.split("\\" + separator));
 			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
