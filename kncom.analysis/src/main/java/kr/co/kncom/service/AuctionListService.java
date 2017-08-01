@@ -223,9 +223,9 @@ public class AuctionListService {
 					// split 결과가 4이면 구 포함 경기도 고양시 덕양구 고양동
 					if (_address[2].endsWith("구")) {
 						sidogu = _address[0] + " " + _address[1] + " " + _address[2];
-						dong = _address[3] + " " + _address[4];
+						dong = _address[3]; // + " " + _address[4];
 						
-						_arrBunji = _address[5].split("-");
+						_arrBunji = _address[4].split("-");
 						
 					} else if (_address[2].endsWith("동")) {
 						sidogu = _address[0] + " " + _address[1];

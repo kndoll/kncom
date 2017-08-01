@@ -40,7 +40,7 @@ public class AuctionListServiceTest {
 	public void insertAuctionListTest() {
 		
 		System.out.println("## auctionListService Instance ==> " + auctionListService);
-		//auctionListService.insertAuctionList();
+		auctionListService.insertAuctionList();
 	}
 	
 	@Test
