@@ -104,8 +104,8 @@ public class AuctionListService {
 	 */
 	public void insertAuctionList() {
 
-		final String[] fileDirPrefixArr = {"P:\\서울\\", "P:\\경매가경기도\\dat"};
-		final String[] backDirPrefixArr = {"P:\\서울_오류데이터\\", "P:\\경기도_오류데이터\\"};
+		final String[] fileDirPrefixArr = {"P:\\경매가경기도\\dat\\"};
+		final String[] backDirPrefixArr = {"P:\\경기도_오류데이터\\"};
 		
 		AuctionList2 auctionList2 = null;
 		List<String> fileList = null;
