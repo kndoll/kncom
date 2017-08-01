@@ -190,7 +190,7 @@ public class AuctionListService {
 			} else {
 				address = element.text();
 			}
-			//System.out.println("## address ==> " + address);
+			System.out.println("## address ==> " + address);
 			
 			auctionList2.setAddress(address);
 			
