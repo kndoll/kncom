@@ -6,7 +6,8 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import kr.co.kncom.service.AuctionListService;
 
 public class ServiceConfigTest {
-
+		
+	/*
 	  @Test
 	  public void serivceConfigTest(){
 		  AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(ServiceConfig.class);
@@ -15,5 +16,6 @@ public class ServiceConfigTest {
 		  System.out.println("## " + auctionListService);
 		  
 	  }
+	  */
 	  
 }

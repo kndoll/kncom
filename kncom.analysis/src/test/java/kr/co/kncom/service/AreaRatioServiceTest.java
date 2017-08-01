@@ -1,5 +1,9 @@
 package kr.co.kncom.service;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,11 +23,18 @@ public class AreaRatioServiceTest {
 	@Test
 	public void insertAreaRatioTest() {
 		
-		Map<String, String> params  = new HashMap<String, String>();
-		params.put("filePath", "F:\\201704lobig\\1\\11110\\10100\\1\\0\\daejang_pyojebu.dat");
+		//Map<String, String> params  = new HashMap<String, String>();
+		//params.put("filePath", "F:\\201704lobig\\1\\11110\\11000\\95\\0\\daejang_pyojebu.dat");
+		//areaRatioService.insertAreaRatio(params);
+		/*
+		Path path = Paths.get("F:\\201704lobig");
 		
-		areaRatioService.insertAreaRatio(params);
-		
+		try {
+		    Files.walkFileTree(path, areaRatioService);
+		} catch (IOException ex) {
+			
+		}
+		*/
 	}
 	
 	/* - private method 테스트 적용

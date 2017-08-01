@@ -356,6 +356,9 @@ public class AuctionListService {
 			auctionList2.setBuildingArea(extractArea(element.text()));
 			//System.out.println("## buildingArea ==> " + extractArea(element.text()));
 			
+			// 건물면적 제시외
+			auctionList2.setBuildingOther(extractAreaOther(element.text()));
+			
 			// 건물지분비율
 			auctionList2.setBuildingRate(calcJibunRate(element.text()));
 			//System.out.println("## buildAreaRate ==> " + calcJibunRate(element.text()));
@@ -483,5 +486,24 @@ public class AuctionListService {
 		
 		return rtnArea;
 		
+	}
+	
+	/**
+	 * 건물면적 제시외 추출
+	 * @param srcArea
+	 * @return
+	 */
+	private float extractAreaOther(String srcArea) {
+		float rtnArea = 0f;
+		
+		boolean existJesi = srcArea.contains("제시외");
+		
+		// 제시외 존재 여부
+		if (existJesi) {
+			rtnArea = Float.parseFloat(srcArea.split("제시외")[1].split("㎡")[0].replaceAll("[전체㎡★\\,]", "").replaceAll("(^\\p{Z}+|\\p{Z}+$)", ""));
+			System.out.println("## 건물 제시외 면적 ==> " + rtnArea);
+		} 
+		
+		return rtnArea;
 	}
 }

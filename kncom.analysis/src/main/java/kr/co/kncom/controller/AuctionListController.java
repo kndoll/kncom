@@ -47,5 +47,13 @@ public class AuctionListController {
 
 		return auctionListService.getMarketPriceList(params);
 	}
+	
+	@RequestMapping(value = "/auctionListCreate", method = RequestMethod.GET)
+	public @ResponseBody String auctionListCreate(Model model) {
+		
+		auctionListService.insertAuctionList();
+		
+		return null;
+	}
 
 }

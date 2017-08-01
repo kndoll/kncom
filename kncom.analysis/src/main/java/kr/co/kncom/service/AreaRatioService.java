@@ -1,5 +1,11 @@
 package kr.co.kncom.service;
 
+import java.io.IOException;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -13,13 +19,29 @@ import kr.co.kncom.util.FileUtil;
 import kr.co.kncom.util.StringUtil;
 
 @Service
-public class AreaRatioService {
+public class AreaRatioService extends SimpleFileVisitor<Path>{
 	
 	private final String totalPyojebuFileName = "daejang_totalpyojebu.dat";
 	private final String jygyAreaFileName = "daejang_jygyarea.dat";
 	
 	@Autowired
 	private JttypelistRepository jttypelist;
+	
+	@Override
+	public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+		
+		if (file.getFileName().toString().equals("daejang_pyojebu.dat")) {
+			//System.out.println("## file ==> " + file.toString());
+		
+			// 여기서 서비스 호출
+			Map<String, String> params  = new HashMap<String, String>();
+			params.put("filePath", file.toString());
+			
+			insertAreaRatio(params);
+		}
+		
+		return super.visitFile(file, attrs);
+	}
 	
 	/**
 	 * 표제부 파일 경로를 입력받아 용적률을 재계산한다.
@@ -32,10 +54,47 @@ public class AreaRatioService {
 
 		// 용적률 데이터는 집합건물의 동 기준으로 처리
 		List<String[]> pyojebuList = FileUtil.readFileToStringArrayList(filePath, "|");
-
-		for (String[] _list : pyojebuList) {
-			if (isDasedae(_list)) {
-
+		
+		// 공통변수
+		float areaRatio = 0f; // 용적률
+		float arCalcTotalArea = 0f; // 용적률 산정 연면적
+		float antiGroundArea = 0f; // 대지면적
+		
+		for (String[] _arr : pyojebuList) {
+			// 재계산 대상 파일 여부 확인
+			boolean isExcute = isDasedae(_arr);
+			if (isExcute) {
+				// 데이터 가공
+				areaRatio = Float.parseFloat(_arr[30]);
+				arCalcTotalArea = Float.parseFloat(_arr[29]);
+				antiGroundArea = Float.parseFloat(_arr[25]);
+				
+				// 용적률 존재 여부
+				if (areaRatio > 0) {
+					if (arCalcTotalArea > 0 && antiGroundArea > 0) { // step 1-1
+						
+					} else if (arCalcTotalArea == 0 && antiGroundArea > 0) { // step 2-1,2
+					} else if (arCalcTotalArea > 0 && antiGroundArea == 0) { // step 3-1,2
+						System.out.println("## areaRatio => " + areaRatio);
+						System.out.println("## arCalcTotalArea => " + arCalcTotalArea);
+						System.out.println("## antiGroundArea => " + antiGroundArea);
+						
+						System.out.println("## filePath : " + filePath);
+						System.out.println("## STEP 3-1,2");
+						
+					} else if (arCalcTotalArea == 0 && antiGroundArea == 0) { // step 4-1,2,3
+						System.out.println("## areaRatio => " + areaRatio);
+						System.out.println("## arCalcTotalArea => " + arCalcTotalArea);
+						System.out.println("## antiGroundArea => " + antiGroundArea);
+						
+						System.out.println("## filePath : " + filePath);
+						System.out.println("## STEP 4-1,2,3");
+					}
+				} else {
+					// STEP 5-1 ~ STEP 5-3
+				}
+				
+				// 데이터 DBMS에 저장
 			}
 		}
 
@@ -84,34 +143,32 @@ public class AreaRatioService {
 					}
 				}
 
-				System.out.println("## isApt ==> " + isApt);
-
-				if (!isApt) {
-
-					// jttypelist 데이블에서 존재여부 확인
-					if (isExistOneRoom(Integer.parseInt(data[8]), Integer.parseInt(data[9]), Integer.parseInt(data[11]),
-							Integer.parseInt(data[12]))) {
-						rtnVal = true;
-					} else {
-						rtnVal = calcDasedaeFromFloor(jibunLocation + jygyAreaFileName);
-					}
-
+				if (!isApt) { // 아파트가 아닐경우
+					// jttypelist 테이블(도시형생활주택)에서 존재여부 확인
+					rtnVal = isDasedaeFromCityTypeHouse(data, jibunLocation);
 				}
 
 			} else {
-				// jttypelist 데이블에서 존재여부 확인
-				if (isExistOneRoom(Integer.parseInt(data[8]), Integer.parseInt(data[9]), Integer.parseInt(data[11]),
-						Integer.parseInt(data[12]))) {
-					rtnVal = true;
-				} else {
-					rtnVal = calcDasedaeFromFloor(jibunLocation + jygyAreaFileName);
-				}
+				rtnVal = isDasedaeFromCityTypeHouse(data, jibunLocation);
 			}
 
 		} else {
 			rtnVal = false;
 		}
 
+		return rtnVal;
+	}
+	
+	private boolean isDasedaeFromCityTypeHouse(String[] data, StringBuilder jibunLocation) {
+		boolean rtnVal = false;
+		
+		if (isExistOneRoom(Integer.parseInt(data[8]), Integer.parseInt(data[9]), Integer.parseInt(data[11]),
+				Integer.parseInt(data[12]))) {
+			rtnVal = true;
+		} else {
+			rtnVal = calcDasedaeFromFloor(jibunLocation + jygyAreaFileName);
+		}
+		
 		return rtnVal;
 	}
 
@@ -137,7 +194,7 @@ public class AreaRatioService {
 	
 	
 	/**
-	 * 전유공용면적파일에 주용도 코드와 층수로 다세대 건물인지 확인한다.
+	 * 전유공용면적파일에서 주용도코드와 층수로 다세대 건물인지 확인한다.
 	 * @param filePath 전유공요면적 파일 위치
 	 * @return
 	 */
@@ -161,4 +218,5 @@ public class AreaRatioService {
 		
 		return rtnVal;
 	}
+	
 }

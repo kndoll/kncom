@@ -12,6 +12,7 @@ public class AreaRatioMultiId implements Serializable {
 	private String step;
 	private int si;
 	private int gu;
+	private int dong;
 	private int jibun1;
 	private int jibun2;
 }
