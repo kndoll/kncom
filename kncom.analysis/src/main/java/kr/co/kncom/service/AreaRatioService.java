@@ -72,23 +72,9 @@ public class AreaRatioService extends SimpleFileVisitor<Path>{
 				// 용적률 존재 여부
 				if (areaRatio > 0) {
 					if (arCalcTotalArea > 0 && antiGroundArea > 0) { // step 1-1
-						
 					} else if (arCalcTotalArea == 0 && antiGroundArea > 0) { // step 2-1,2
 					} else if (arCalcTotalArea > 0 && antiGroundArea == 0) { // step 3-1,2
-						System.out.println("## areaRatio => " + areaRatio);
-						System.out.println("## arCalcTotalArea => " + arCalcTotalArea);
-						System.out.println("## antiGroundArea => " + antiGroundArea);
-						
-						System.out.println("## filePath : " + filePath);
-						System.out.println("## STEP 3-1,2");
-						
 					} else if (arCalcTotalArea == 0 && antiGroundArea == 0) { // step 4-1,2,3
-						System.out.println("## areaRatio => " + areaRatio);
-						System.out.println("## arCalcTotalArea => " + arCalcTotalArea);
-						System.out.println("## antiGroundArea => " + antiGroundArea);
-						
-						System.out.println("## filePath : " + filePath);
-						System.out.println("## STEP 4-1,2,3");
 					}
 				} else {
 					// STEP 5-1 ~ STEP 5-3
