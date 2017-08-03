@@ -559,19 +559,23 @@ public class AreaRatioService extends SimpleFileVisitor<Path> {
 	private List<String> getBsJibunList(String filePath) {
 
 		List<String> rtnList = new ArrayList<String>();
-
-		// 부속지번이 존재하는 경우
-		List<String[]> bsJibunList = FileUtil.readFileToStringArrayList(filePath, "|");
-		String _filePath = null;
-		for (String[] _arr : bsJibunList) {
-			//StringUtil.printIndexData(_arr, "부속지번");
-			_filePath = 1 + "\\";
-			_filePath += Integer.parseInt(_arr[23]) + "\\";
-			_filePath += Integer.parseInt(_arr[24]) + "\\";
-			_filePath += Integer.parseInt(_arr[26]) + "\\";
-			_filePath += Integer.parseInt(_arr[27]) + "\\";
-
-			rtnList.add(_filePath);
+		
+		try {
+			// 부속지번이 존재하는 경우
+			List<String[]> bsJibunList = FileUtil.readFileToStringArrayList(filePath, "|");
+			String _filePath = null;
+			for (String[] _arr : bsJibunList) {
+				//StringUtil.printIndexData(_arr, "부속지번");
+				_filePath = 1 + "\\";
+				_filePath += Integer.parseInt(_arr[23]) + "\\";
+				_filePath += Integer.parseInt(_arr[24]) + "\\";
+				_filePath += Integer.parseInt(_arr[26]) + "\\";
+				_filePath += Integer.parseInt(_arr[27]) + "\\";
+				
+				rtnList.add(_filePath);
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
 		}
 
 		return rtnList;
