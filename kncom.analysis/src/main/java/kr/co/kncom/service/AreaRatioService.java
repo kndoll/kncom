@@ -514,21 +514,19 @@ public class AreaRatioService extends SimpleFileVisitor<Path> {
 	private float getAntiGroundRatioDenominator(String filePath) {
 
 		float rtnDenominator = 0f;
-
-		List<String[]> djgiArrList = FileUtil.readFileToStringArrayList(filePath, ",");
-		String[] _denominatorArr = null;
-		for (String[] _arr : djgiArrList) {
-			// StringUtil.printIndexData(_arr, "대지권등록정보");
-			if (_arr[12].length() > 0) {
-				
-				//rtnDenominator = Float.parseFloat(_arr[12].split("\\/")[1]);
-				_denominatorArr = _arr[12].split("\\/");
-				if (_denominatorArr[1] != null) {
-					rtnDenominator = Float.parseFloat(_denominatorArr[1]);
+		
+		try {
+			List<String[]> djgiArrList = FileUtil.readFileToStringArrayList(filePath, ",");
+			for (String[] _arr : djgiArrList) {
+				// StringUtil.printIndexData(_arr, "대지권등록정보");
+				if (_arr[12].length() > 0) {
+					
+					rtnDenominator = Float.parseFloat(_arr[12].split("\\/")[1]);
+					break;
 				}
-				
-				break;
 			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 
 		return rtnDenominator;
