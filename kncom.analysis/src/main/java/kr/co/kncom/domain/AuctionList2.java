@@ -13,27 +13,27 @@ public class AuctionList2 {
 	@Id
 	private String ind;
 	
-	@Column
+	@Column(nullable=false)
 	private String address;
 	
-	@Column(length=100)
+	@Column(length=100, nullable=false)
 	private String gubun;
 	
-	@Column
+	@Column(nullable=false)
 	private Long appraisedValue;
 	
-	@Column
+	@Column(nullable=false)
 	private Long lowestValue;
 	
-	@Column
+	@Column(nullable=false)
 	private Long saleValue;
 	
-	@Column
+	@Column(nullable=false)
 	private float landArea;
 	
 	private float landRate;
 	
-	@Column
+	@Column(nullable=false)
 	private float buildingArea;
 	
 	private float buildingRate;
@@ -54,13 +54,13 @@ public class AuctionList2 {
 	@Column(columnDefinition = "TEXT")
 	private String attention;
 	
-	@Column
+	@Column(nullable=false)
 	private int si_ind;
 	
-	@Column
+	@Column(nullable=false)
 	private int sidogus_ind;
 	
-	@Column
+	@Column(nullable=false)
 	private int dongs_ind;
 	
 	private int bunji1;
