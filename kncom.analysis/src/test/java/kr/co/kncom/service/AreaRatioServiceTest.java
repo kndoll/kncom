@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,10 +21,13 @@ public class AreaRatioServiceTest {
 	@Test
 	public void insertAreaRatioTest() {
 		
-		//Map<String, String> params  = new HashMap<String, String>();
-		//params.put("filePath", "F:\\201704lobig\\1\\11110\\11000\\95\\0\\daejang_pyojebu.dat");
-		//areaRatioService.insertAreaRatio(params);
 		/*
+		Map<String, String> params  = new HashMap<String, String>();
+		//params.put("filePath", "F:\\201704lobig\\1\\11110\\11000\\92\\0\\daejang_pyojebu.dat"); // 1-1
+		params.put("filePath", "F:\\201704lobig\\1\\11110\\11000\\126\\0\\daejang_pyojebu.dat"); // 2-1
+		areaRatioService.insertAreaRatio(params);
+		*/
+		
 		Path path = Paths.get("F:\\201704lobig");
 		
 		try {
@@ -34,7 +35,6 @@ public class AreaRatioServiceTest {
 		} catch (IOException ex) {
 			
 		}
-		*/
 	}
 	
 	/* - private method 테스트 적용
