@@ -32,6 +32,7 @@ public class AreaRatioServiceTest {
 		areaRatioService.insertAreaRatio(params);
 		*/
 		
+		/*
 		Path path = Paths.get("X:\\201706lobig");
 		
 		try {
@@ -39,6 +40,7 @@ public class AreaRatioServiceTest {
 		} catch (IOException ex) {
 			
 		}
+		*/
 	}
 	
 	/* - private method 테스트 적용

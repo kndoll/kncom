@@ -23,7 +23,7 @@ public class AreaRatioController {
 	@RequestMapping(value = "/areaRatioCreate", method = RequestMethod.GET)
 	public @ResponseBody String areaRatioCreate(Model model) {
 		
-		Path path = Paths.get("F:\\201704lobig");
+		Path path = Paths.get("X:\\201706lobig");
 		
 		try {
 		    Files.walkFileTree(path, areaRatioService);

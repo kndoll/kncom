@@ -105,7 +105,7 @@ public class AreaRatioService extends SimpleFileVisitor<Path> {
 				boolean isExcute = isDasedae(_arr);
 				if (isExcute) {
 					// 데이터 가공
-					StringUtil.printIndexData(_arr, "표제부");
+					//StringUtil.printIndexData(_arr, "표제부");
 
 					// 합산
 					areaRatio += Float.parseFloat(_arr[30]);
@@ -418,7 +418,7 @@ public class AreaRatioService extends SimpleFileVisitor<Path> {
 		areaRatio.setJibun1(jibun1);
 		areaRatio.setJibun2(jibun2);
 		areaRatio.setArCalcTotalArea((float)pyojebuData.get("arCalcTotalArea")); // 용적률산정연면적
-		areaRatio.setAreaRatio((float)pyojebuData.get("areaRatio")); // 연면적
+		areaRatio.setTotalArea((float)pyojebuData.get("totalArea")); // 연면적
 		areaRatio.setUnderGroundFloor((int)pyojebuData.get("underGroundFloor")); // 지하층수
 		
 		// 주소
