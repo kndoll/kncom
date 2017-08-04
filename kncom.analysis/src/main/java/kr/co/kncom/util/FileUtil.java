@@ -37,22 +37,18 @@ public class FileUtil {
 	 * 해당 경로의 파일을 라인별로 읽어 구분자로 split 후, LIST로 리턴한다.
 	 * @param filePath
 	 * @return
+	 * @throws IOException 
 	 */
-	public static List<String[]> readFileToStringArrayList(String filePath, String separator) {
+	public static List<String[]> readFileToStringArrayList(String filePath, String separator) throws IOException {
 		
 		List<String[]> rtnList = new ArrayList<String[]>(); 
+			
+		BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(filePath),"euc-kr"));
 		
-		try {
-			
-			BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(filePath),"euc-kr"));
-			
-			String strLine = null;
-			
-			while((strLine = in.readLine()) != null) {
-				rtnList.add(strLine.split("\\" + separator));
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
+		String strLine = null;
+		
+		while((strLine = in.readLine()) != null) {
+			rtnList.add(strLine.split("\\" + separator));
 		}
 		
 		return rtnList;

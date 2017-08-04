@@ -6,6 +6,7 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 
 @Entity
 public class AuctionList2 {
@@ -51,7 +52,7 @@ public class AuctionList2 {
 	@Column(length=8)
 	private String result;
 	
-	@Column(columnDefinition = "TEXT")
+	@Lob
 	private String attention;
 	
 	@Column(nullable=false)

@@ -1,12 +1,10 @@
 package kr.co.kncom.domain;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
 
-import lombok.Data;
-
-@Data
 @Entity
 @IdClass(AreaRatioMultiId.class)
 public class AreaRatio {
@@ -30,7 +28,7 @@ public class AreaRatio {
 	private float groundEachFloorSum; // 지상층별개요합산
 	private float groundPrivatePublicSum; // 지상전유공용합산
 	private float areaRatio; // 용적률
-	private float outsideParcel; // 외필지
+	private int outsideParcel; // 외필지수
 	private float antiGroundArea; // 대지면적
 	private float landArea; // 토지대장면적
 	private float eachOffcialPriceArea; // 개별공시지가면적
@@ -40,6 +38,12 @@ public class AreaRatio {
 	private float antiGroundAreaReplaceVal; // 대지면적대체값
 
 	private String result;
+
+	// 주소추가
+	@Column(length = 255)
+	private String address;
+	@Column(length = 255)
+	private String roadAddress;
 
 	public String getStep() {
 		return step;
@@ -137,11 +141,11 @@ public class AreaRatio {
 		this.areaRatio = areaRatio;
 	}
 
-	public float getOutsideParcel() {
+	public int getOutsideParcel() {
 		return outsideParcel;
 	}
 
-	public void setOutsideParcel(float outsideParcel) {
+	public void setOutsideParcel(int outsideParcel) {
 		this.outsideParcel = outsideParcel;
 	}
 
@@ -207,6 +211,22 @@ public class AreaRatio {
 
 	public void setResult(String result) {
 		this.result = result;
+	}
+
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
+	public String getRoadAddress() {
+		return roadAddress;
+	}
+
+	public void setRoadAddress(String roadAddress) {
+		this.roadAddress = roadAddress;
 	}
 
 }

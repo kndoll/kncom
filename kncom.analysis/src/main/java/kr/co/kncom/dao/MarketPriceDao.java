@@ -195,7 +195,7 @@ public class MarketPriceDao {
 
 					}
 
-				} catch (JSONException e) {
+				} catch (JSONException | NumberFormatException | IOException e) {
 					e.printStackTrace();
 				}
 			}
@@ -210,8 +210,9 @@ public class MarketPriceDao {
 	 * 전유공용면적을 가져온다.
 	 * 
 	 * @param areaDirPath
+	 * @throws IOException 
 	 */
-	private float getJygyAreaCalc(String areaDirPath, String dong, String ho, float buildingArea) {
+	private float getJygyAreaCalc(String areaDirPath, String dong, String ho, float buildingArea) throws IOException {
 
 		float rtnVal = 0;
 
@@ -279,8 +280,9 @@ public class MarketPriceDao {
 	 * @param ho
 	 * @param landArea
 	 * @return
+	 * @throws IOException 
 	 */
-	protected float getDjgiAreaCalc(String dirParh, String dong, String ho, float landArea) {
+	protected float getDjgiAreaCalc(String dirParh, String dong, String ho, float landArea) throws IOException {
 
 		float rtnVal = 0;
 
@@ -339,8 +341,9 @@ public class MarketPriceDao {
 	 * @param landArea
 	 * @param _dajiArea
 	 * @return
+	 * @throws IOException 
 	 */
-	private float getDajiAreaFromPyojenu(String dirParh, String dong, float landArea) {
+	private float getDajiAreaFromPyojenu(String dirParh, String dong, float landArea) throws IOException {
 		
 		float rtnVal = 0;
 		float _dajiArea = 0;
@@ -383,8 +386,9 @@ public class MarketPriceDao {
 	 * @param ho
 	 * @param landArea
 	 * @return
+	 * @throws IOException 
 	 */
-	private float getDjgiAreaFromDjgi(String dirParh, String dong, String ho, float landArea) {
+	private float getDjgiAreaFromDjgi(String dirParh, String dong, String ho, float landArea) throws IOException {
 		
 		float rtnVal = 0;
 		float _dajiArea = 0;
