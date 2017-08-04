@@ -597,7 +597,7 @@ public class AreaRatioService extends SimpleFileVisitor<Path> {
 		int floor = 0;
 
 		for (String[] _arr : jygyArrList) {
-			StringUtil.printIndexData(_arr, "전유공용구분");
+			//StringUtil.printIndexData(_arr, "전유공용구분");
 			floor = Integer.parseInt(_arr[23]);
 
 			if (floor >= 20 && floor < 30) {
