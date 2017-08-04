@@ -164,7 +164,7 @@ public class AreaRatioService extends SimpleFileVisitor<Path> {
 				areaRatio = (float) pyojebuData.get("areaRatio");
 				arCalcTotalArea = (float) pyojebuData.get("arCalcTotalArea");
 				
-				calcResult = FormatUtil.round(Math.abs(1 - areaRatio / (arCalcTotalArea / antiGroundArea)));
+				calcResult = FormatUtil.round(Math.abs(1 - areaRatio / ((arCalcTotalArea / antiGroundArea) * 100)));
 
 				if (areaRatio > 0) { // 용적률이 대장상에 존재하는 경우
 					result = "";
@@ -186,31 +186,37 @@ public class AreaRatioService extends SimpleFileVisitor<Path> {
 						step = "Step2-1";
 						areaRatioVO = buildAreaRatioVO(result, step, pyojebuData);
 						areaRatioRepository.save(areaRatioVO);
-
-						step = "Step2-2";
-						if (calcResult <= 0.01) {
-							result = "2";
-						} else {
-							result = "계산오류";
+						
+						if (areaRatioVO.getResult().equals("")) {
+							step = "Step2-2";
+							if (calcResult <= 0.01) {
+								result = "2";
+							} else {
+								result = "계산오류";
+							}
+							
+							areaRatioVO = buildAreaRatioVO(result, step, pyojebuData);
+							areaRatioRepository.save(areaRatioVO);
 						}
-						areaRatioVO = buildAreaRatioVO(result, step, pyojebuData);
-						areaRatioRepository.save(areaRatioVO);
 						
 					} else if (arCalcTotalArea > 0 && antiGroundArea == 0) { // step
-																				// 3-1,2
 
 						step = "Step3-1";
 						areaRatioVO = buildAreaRatioVO(result, step, pyojebuData);
 						areaRatioRepository.save(areaRatioVO);
-
-						step = "Step3-2";
-						if (calcResult <= 0.01) {
-							result = "3";
-						} else {
-							result = "계산오류3";
+						
+						System.out.println("##result-length ==> " + areaRatioVO.getResult().length());
+						
+						if (areaRatioVO.getResult().equals("")) {
+							step = "Step3-2";
+							if (calcResult <= 0.01) {
+								result = "3";
+							} else {
+								result = "계산오류3";
+							}
+							areaRatioVO = buildAreaRatioVO(result, step, pyojebuData);
+							areaRatioRepository.save(areaRatioVO);
 						}
-						areaRatioVO = buildAreaRatioVO(result, step, pyojebuData);
-						areaRatioRepository.save(areaRatioVO);
 
 					} else if (arCalcTotalArea == 0 && antiGroundArea == 0) { // step
 																				// 4-1,2,3
@@ -218,19 +224,23 @@ public class AreaRatioService extends SimpleFileVisitor<Path> {
 						step = "Step4-1";
 						areaRatioVO = buildAreaRatioVO(result, step, pyojebuData);
 						areaRatioRepository.save(areaRatioVO);
-
-						step = "Step4-2";
-						areaRatioVO = buildAreaRatioVO(result, step, pyojebuData);
-						areaRatioRepository.save(areaRatioVO);
-
-						step = "Step4-3";
-						if (calcResult <= 0.01) {
-							result = "4";
-						} else {
-							result = "계산오류4";
+						
+						if (areaRatioVO.getResult().equals("")) {
+							step = "Step4-2";
+							areaRatioVO = buildAreaRatioVO(result, step, pyojebuData);
+							areaRatioRepository.save(areaRatioVO);
 						}
-						areaRatioVO = buildAreaRatioVO(result, step, pyojebuData);
-						areaRatioRepository.save(areaRatioVO);
+						
+						if (areaRatioVO.getResult().equals("")) {
+							step = "Step4-3";
+							if (calcResult <= 0.01) {
+								result = "4";
+							} else {
+								result = "계산오류4";
+							}
+							areaRatioVO = buildAreaRatioVO(result, step, pyojebuData);
+							areaRatioRepository.save(areaRatioVO);
+						}
 
 					}
 				} else {
@@ -238,20 +248,24 @@ public class AreaRatioService extends SimpleFileVisitor<Path> {
 					step = "Step5-1";
 					areaRatioVO = buildAreaRatioVO(result, step, pyojebuData);
 					areaRatioRepository.save(areaRatioVO);
-
-					step = "Step5-2";
-					areaRatioVO = buildAreaRatioVO(result, step, pyojebuData);
-					areaRatioRepository.save(areaRatioVO);
-
-					step = "Step5-3";
-					calcResult = (arCalcTotalArea / antiGroundArea) * 100;
-					if (calcResult >= 400) {
-						result = "5";
-					} else {
-						result = "계산오류5";
+					
+					if (areaRatioVO.getResult().equals("")) {
+						step = "Step5-2";
+						areaRatioVO = buildAreaRatioVO(result, step, pyojebuData);
+						areaRatioRepository.save(areaRatioVO);
 					}
-					areaRatioVO = buildAreaRatioVO(result, step, pyojebuData);
-					areaRatioRepository.save(areaRatioVO);
+					
+					if (areaRatioVO.getResult().equals("")) {
+						step = "Step5-3";
+						calcResult = (arCalcTotalArea / antiGroundArea) * 100;
+						if (calcResult >= 400) {
+							result = "5";
+						} else {
+							result = "계산오류5";
+						}
+						areaRatioVO = buildAreaRatioVO(result, step, pyojebuData);
+						areaRatioRepository.save(areaRatioVO);
+					}
 				}
 
 			}
@@ -481,7 +495,10 @@ public class AreaRatioService extends SimpleFileVisitor<Path> {
 		areaRatio.setAntiGroundRatioDenominator(
 				getAntiGroundRatioDenominator(this.djgiFileArr[0] + filePath.toString() + this.djgiFileArr[1]));
 		// 용적률 계산
-		float areaRatioCalc = (areaRatio.getArCalcTotalArea() / areaRatio.getAntiGroundArea()) * 100;
+		float areaRatioCalc = 0f;
+		if (areaRatio.getAntiGroundArea() > 0) {
+			areaRatioCalc = (areaRatio.getArCalcTotalArea() / areaRatio.getAntiGroundArea()) * 100;
+		}
 		areaRatio.setAreaRatioCalc(FormatUtil.round(areaRatioCalc));
 
 		// 용적률산정연면적대체값
@@ -600,7 +617,7 @@ public class AreaRatioService extends SimpleFileVisitor<Path> {
 			//StringUtil.printIndexData(_arr, "전유공용구분");
 			floor = Integer.parseInt(_arr[23]);
 
-			if (floor >= 20 && floor < 30) {
+			if ((floor >= 20 && floor < 30) && !_arr[36].equals("차")) {
 				rtnAntiGroundArea += Float.parseFloat(_arr[37]);
 			}
 		}
