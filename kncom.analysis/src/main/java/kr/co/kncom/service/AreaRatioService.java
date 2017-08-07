@@ -30,10 +30,10 @@ public class AreaRatioService extends SimpleFileVisitor<Path> {
 	private final String[] totalPyojebuFileArr = { "X:\\201706lobig\\", "daejang_totalpyojebu.dat" };
 	private final String[] jygyAreaFileArr = { "X:\\201706lobig\\", "daejang_jygyarea.dat" };
 	private final String[] floorGaeyoFileArr = { "X:\\201706lobig\\", "daejang_floorgaeyo.dat" };
-	private final String[] djgiFileArr = { "Q:\\Tjiy\\", "djgi.dat" }; // 대지권
-	private final String[] tjFileArr = { "Q:\\Tjiy\\", "tj.dat" };
+	private final String[] djgiFileArr = { "J:\\Tjiy\\", "djgi.dat" }; // 대지권
+	private final String[] tjFileArr = { "T:\\Tjiy\\", "tj.dat" }; //토지임야
 	private final String[] bsjibunArr = { "X:\\201706lobig\\", "daejang_bsjibun.dat" }; // 부속지번
-	private final String[] eachOffcialPriceFileArr = { "E:\\Tjiy\\", "gb.dat" };
+	private final String[] eachOffcialPriceFileArr = { "E:\\Tjiy\\", "gb.dat" }; // 개별공시지가
 
 	@Autowired
 	private JttypelistRepository jttypelist;
