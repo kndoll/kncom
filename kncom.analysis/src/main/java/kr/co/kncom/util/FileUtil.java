@@ -47,7 +47,23 @@ public class FileUtil {
 		
 		String strLine = null;
 		
+		int indexOf = -1;
+		int lastIndexOf = -1;
+		String _str = null;
+		String _replaceStr = null;
 		while((strLine = in.readLine()) != null) {
+			
+			// "안에 분리자를 치환한다.
+			indexOf = strLine.indexOf("\"");
+			
+			if (indexOf != -1) {
+				lastIndexOf = strLine.lastIndexOf("\"");
+				_str = strLine.substring(indexOf, lastIndexOf+1);
+				_replaceStr = _str.replace(",", "|");
+				
+				strLine = strLine.replace(_str, _replaceStr);
+			}
+			
 			rtnList.add(strLine.split("\\" + separator));
 		}
 		
