@@ -29,7 +29,6 @@ public class AreaRatioServiceTest {
 		params.put("filePath", "F:\\201704lobig\\1\\11110\\11000\\126\\0\\daejang_pyojebu.dat"); // 2-1
 		areaRatioService.insertAreaRatio(params);
 		
-		*/
 		Path path = Paths.get("X:\\201706lobig");
 		
 		try {
@@ -37,6 +36,7 @@ public class AreaRatioServiceTest {
 		} catch (IOException ex) {
 			
 		}
+		*/
 	}
 	
 	/* - private method 테스트 적용
