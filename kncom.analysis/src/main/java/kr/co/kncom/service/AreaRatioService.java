@@ -23,7 +23,6 @@ import kr.co.kncom.repository.AreaRatioRepository;
 import kr.co.kncom.repository.JttypelistRepository;
 import kr.co.kncom.util.FileUtil;
 import kr.co.kncom.util.FormatUtil;
-import kr.co.kncom.util.StringUtil;
 
 @Service
 public class AreaRatioService extends SimpleFileVisitor<Path> {
