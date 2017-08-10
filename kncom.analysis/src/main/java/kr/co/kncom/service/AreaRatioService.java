@@ -1,6 +1,8 @@
 package kr.co.kncom.service;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
@@ -21,6 +23,7 @@ import kr.co.kncom.repository.AreaRatioRepository;
 import kr.co.kncom.repository.JttypelistRepository;
 import kr.co.kncom.util.FileUtil;
 import kr.co.kncom.util.FormatUtil;
+import kr.co.kncom.util.StringUtil;
 
 @Service
 public class AreaRatioService extends SimpleFileVisitor<Path> {
@@ -30,7 +33,7 @@ public class AreaRatioService extends SimpleFileVisitor<Path> {
 	private final String[] jygyAreaFileArr = { "X:\\201706lobig\\", "daejang_jygyarea.dat" }; // 전유공유
 	private final String[] floorGaeyoFileArr = { "X:\\201706lobig\\", "daejang_floorgaeyo.dat" }; // 층별개요
 	private final String[] djgiFileArr = { "J:\\Tjiy\\", "djgi.dat" }; // 대지권
-	private final String[] tjFileArr = { "T:\\Tjiy\\", "tj.dat" }; //토지임야
+	private final String[] tjFileArr = { "T:\\Tjiy\\", "tj.dat" }; // 토지임야
 	private final String[] bsjibunArr = { "X:\\201706lobig\\", "daejang_bsjibun.dat" }; // 부속지번
 	private final String[] eachOffcialPriceFileArr = { "E:\\Tjiy\\", "gb.dat" }; // 개별공시지가
 
@@ -45,17 +48,17 @@ public class AreaRatioService extends SimpleFileVisitor<Path> {
 
 	@Override
 	public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-		
+
 		if (file.getFileName().toString().equals(pyojebuFileArr[1])) {
 			System.out.println("## file ==> " + file.toString());
-			
+
 			// 여기서 서비스 호출
 			Map<String, String> params = new HashMap<String, String>();
 			params.put("filePath", file.toString());
 
 			insertAreaRatio(params);
 		}
-		
+
 		return super.visitFile(file, attrs);
 	}
 
@@ -69,7 +72,7 @@ public class AreaRatioService extends SimpleFileVisitor<Path> {
 		try {
 			String filePath = params.get("filePath");
 			String totalPyojebu = filePath.replaceAll(pyojebuFileArr[1], totalPyojebuFileArr[1]);
-			
+
 			// 공통변수 (표제부에서 합산해야 함)
 			float areaRatio = 0f; // 용적률 (합산)
 			float arCalcTotalArea = 0f; // 용적률 산정 연면적 (합산)
@@ -77,136 +80,137 @@ public class AreaRatioService extends SimpleFileVisitor<Path> {
 			int underGroundFloor = 0; // (아무값)
 			float totalArea = 0f; // 연면적 (합산)
 			int outsideParcel = 0; // 외필지수 (아무값)
-			
+
 			// 지번
 			int gu = 0;
 			int dong = 0;
 			int jibun1 = 0;
 			int jibun2 = 0;
-			
+
 			// 주소
 			String address = null;
 			String roadAddress = null;
-			
+
 			float calcResult = 0f;
-			
+			float calcResult2 = 0f;
+
 			AreaRatio areaRatioVO;
 			String step = null;
 			String result = null;
-			
+
 			boolean isExcuteReCalc = false;
 			boolean isExcute = false;
-			
+
 			// 해당 지번에 총괄표제부가 존재하는지 확인한다.
 			if (FileUtil.isExistFile(totalPyojebu)) {
-				
+
 				// 총괄표제부 파일을 읽어 처리한다.
 				String[] totalPyojebuData = FileUtil.readFileToString(totalPyojebu).split("\\|");
-				
-				//StringUtil.printIndexData(totalPyojebuData, "총괄 표제부");
+
+				// StringUtil.printIndexData(totalPyojebuData, "총괄 표제부");
 				// 총괄표제부 데이터 표제부 데이터 순서로 매핑
 				String[] pyojebuData = new String[40];
-				
+
 				pyojebuData[34] = totalPyojebuData[30]; // 주용도 코드
 				pyojebuData[8] = totalPyojebuData[10]; // 시군구코드
 				pyojebuData[9] = totalPyojebuData[11]; // 동코드
 				pyojebuData[11] = totalPyojebuData[13]; // 지번1
-				pyojebuData[12] = totalPyojebuData[14]; //지번2
-				
+				pyojebuData[12] = totalPyojebuData[14]; // 지번2
+
 				// 재계산 대상 파일 여부 확인
-				isExcute = isDasedae(pyojebuData); 
-				
+				isExcute = isDasedae(pyojebuData);
+
 				if (isExcute) {
 					// 합산
 					areaRatio = Float.parseFloat(totalPyojebuData[29]);
 					arCalcTotalArea = Float.parseFloat(totalPyojebuData[28]);
 					antiGroundArea = Float.parseFloat(totalPyojebuData[24]);
 					totalArea = Float.parseFloat(totalPyojebuData[27]);
-					
+
 					// 아무값
 					underGroundFloor = 0;
 					outsideParcel = Integer.parseInt(totalPyojebuData[18]);
-					
+
 					gu = Integer.parseInt(totalPyojebuData[10]);
 					dong = Integer.parseInt(totalPyojebuData[11]);
 					jibun1 = Integer.parseInt(totalPyojebuData[13]);
 					jibun2 = Integer.parseInt(totalPyojebuData[14]);
-					
+
 					address = totalPyojebuData[7];
 					roadAddress = totalPyojebuData[8];
-					
+
 					isExcuteReCalc = true;
 				}
-				
+
 			} else {
-				
+
 				// 용적률 데이터는 집합건물의 동 기준으로 처리
 				List<String[]> pyojebuList = FileUtil.readFileToStringArrayList(filePath, "|");
-				
+
 				for (String[] _arr : pyojebuList) {
-					
+
 					// 재계산 대상 파일 여부 확인
 					isExcute = isDasedae(_arr);
-					
+
 					if (isExcute) {
 						// 데이터 가공
-						//StringUtil.printIndexData(_arr, "표제부");
-						
+						// StringUtil.printIndexData(_arr, "표제부");
+
 						// 합산
 						areaRatio += Float.parseFloat(_arr[30]);
 						arCalcTotalArea += Float.parseFloat(_arr[29]);
 						antiGroundArea += Float.parseFloat(_arr[25]);
 						totalArea += Float.parseFloat(_arr[28]);
-						
+
 						// 아무값
 						underGroundFloor = Integer.parseInt(_arr[44]);
 						outsideParcel = Integer.parseInt(_arr[16]);
-						
+
 						gu = Integer.parseInt(_arr[8]);
 						dong = Integer.parseInt(_arr[9]);
 						jibun1 = Integer.parseInt(_arr[11]);
 						jibun2 = Integer.parseInt(_arr[12]);
-						
+
 						address = _arr[5];
 						roadAddress = _arr[6];
-						
-						
+
 						isExcuteReCalc = true;
 					} else {
-						//System.out.println("## ERROR MSG ==> 재계산 대상이 아님");
+						// System.out.println("## ERROR MSG ==> 재계산 대상이 아님");
 					}
 				}
 			}
-			
-			System.out.println("## areaRatio ==> " + areaRatio);
-			System.out.println("## arCalcTotalArea ==> " + arCalcTotalArea);
-			System.out.println("## antiGroundArea ==> " + antiGroundArea);
-			System.out.println("## totalArea ==> " + totalArea);
-			
-			System.out.println("## underGroundFloor ==> " + underGroundFloor);
-			System.out.println("## outsideParcel ==> " + outsideParcel);
 
-			// 표제부의 모든 집합건물 데이터는 하나로 처리한다.
-			Map<String, Object> pyojebuData = new HashMap<String, Object>();
-			pyojebuData.put("areaRatio", areaRatio);
-			pyojebuData.put("arCalcTotalArea", arCalcTotalArea);
-			pyojebuData.put("antiGroundArea", antiGroundArea);
-			pyojebuData.put("totalArea", totalArea);
-			pyojebuData.put("underGroundFloor", underGroundFloor);
-			pyojebuData.put("outsideParcel", outsideParcel);
-			
-			pyojebuData.put("gu", gu);
-			pyojebuData.put("dong", dong);
-			pyojebuData.put("jibun1", jibun1);
-			pyojebuData.put("jibun2", jibun2);
-			pyojebuData.put("address", address);
-			pyojebuData.put("roadAddress", roadAddress);
-			
-			pyojebuData.put("areaRatioCalcTotalAreaReplaceVal", 0f);
-			pyojebuData.put("antiGroundAreaReplaceVal", 0f);
-			
+			System.out.println("## isExcuteReCalc ==> " + isExcuteReCalc);
+
 			// 표제부 기반 데이터 수집은 한번만 실행
 			if (isExcuteReCalc) {
+				System.out.println("## areaRatio ==> " + areaRatio);
+				System.out.println("## arCalcTotalArea ==> " + arCalcTotalArea);
+				System.out.println("## antiGroundArea ==> " + antiGroundArea);
+				System.out.println("## totalArea ==> " + totalArea);
+
+				System.out.println("## underGroundFloor ==> " + underGroundFloor);
+				System.out.println("## outsideParcel ==> " + outsideParcel);
+
+				// 표제부의 모든 집합건물 데이터는 하나로 처리한다.
+				Map<String, Object> pyojebuData = new HashMap<String, Object>();
+				pyojebuData.put("areaRatio", FormatUtil.round(areaRatio));
+				pyojebuData.put("arCalcTotalArea", arCalcTotalArea);
+				pyojebuData.put("antiGroundArea", antiGroundArea);
+				pyojebuData.put("totalArea", totalArea);
+				pyojebuData.put("underGroundFloor", underGroundFloor);
+				pyojebuData.put("outsideParcel", outsideParcel);
+
+				pyojebuData.put("gu", gu);
+				pyojebuData.put("dong", dong);
+				pyojebuData.put("jibun1", jibun1);
+				pyojebuData.put("jibun2", jibun2);
+				pyojebuData.put("address", address);
+				pyojebuData.put("roadAddress", roadAddress);
+
+				pyojebuData.put("areaRatioCalcTotalAreaReplaceVal", 0f);
+				pyojebuData.put("antiGroundAreaReplaceVal", 0f);
 
 				// 용적률 존재 여부
 				areaRatioVO = new AreaRatio();
@@ -214,64 +218,82 @@ public class AreaRatioService extends SimpleFileVisitor<Path> {
 				arCalcTotalArea = (float) pyojebuData.get("arCalcTotalArea");
 
 				if (areaRatio > 0) { // 용적률이 대장상에 존재하는 경우
-					
+
 					if (arCalcTotalArea > 0 && antiGroundArea > 0) { // step 1-1
 						step = "Step1-1";
-						calcResult = FormatUtil.round(Math.abs(1 - areaRatio / ((arCalcTotalArea / antiGroundArea) * 100)));
-						
-						if (calcResult <= 0.01) {
+						calcResult = FormatUtil
+								.round(Math.abs(1 - areaRatio / ((arCalcTotalArea / antiGroundArea) * 100)));
+						calcResult2 = FormatUtil.round((arCalcTotalArea / antiGroundArea) * 100);
+						if (calcResult <= 0.02 && calcResult2 >= 40.00) {
 							result = "1";
-						} else {
-							result = "계산오류";
 						}
 
 						areaRatioVO = buildAreaRatioVO(result, step, pyojebuData);
+
+						if (areaRatioVO.getResult() == null) {
+							step = "Step1-2";
+
+							calcResult = (areaRatioVO.getAreaRatioCalcTotalAreaReplaceVal()
+									/ areaRatioVO.getAntiGroundAreaReplaceVal()) * 100;
+							pyojebuData.put("areaRatioCalcTotalAreaReplaceVal",
+									areaRatioVO.getAreaRatioCalcTotalAreaReplaceVal());
+							pyojebuData.put("antiGroundAreaReplaceVal", areaRatioVO.getAntiGroundAreaReplaceVal());
+
+							if (calcResult > 400) {
+								result = "계산오류1";
+							}
+
+							areaRatioVO = buildAreaRatioVO(result, step, pyojebuData);
+						}
+
 						// 데이터 DBMS에 저장
 						areaRatioRepository.save(areaRatioVO);
-						
+
 					} else if (arCalcTotalArea == 0 && antiGroundArea > 0) { // step
 
 						step = "Step2-1";
 						areaRatioVO = buildAreaRatioVO(result, step, pyojebuData);
-						//areaRatioRepository.save(areaRatioVO);
-						
+						// areaRatioRepository.save(areaRatioVO);
+
 						if (areaRatioVO.getResult() == null) {
 							step = "Step2-2";
-							calcResult = FormatUtil.round(Math.abs(1 - areaRatio / ((areaRatioVO.getAreaRatioCalcTotalAreaReplaceVal() / antiGroundArea) * 100)));
-							pyojebuData.put("areaRatioCalcTotalAreaReplaceVal", areaRatioVO.getAreaRatioCalcTotalAreaReplaceVal());
-							
+							calcResult = FormatUtil.round(Math.abs(1 - areaRatio
+									/ ((areaRatioVO.getAreaRatioCalcTotalAreaReplaceVal() / antiGroundArea) * 100)));
+							pyojebuData.put("areaRatioCalcTotalAreaReplaceVal",
+									areaRatioVO.getAreaRatioCalcTotalAreaReplaceVal());
+
 							if (calcResult <= 0.01) {
 								result = "2";
 							} else {
-								result = "계산오류";
+								result = "계산오류2";
 							}
-							
+
 							areaRatioVO = buildAreaRatioVO(result, step, pyojebuData);
 						}
-						
+
 						areaRatioRepository.save(areaRatioVO);
-						
+
 					} else if (arCalcTotalArea > 0 && antiGroundArea == 0) { // step
 
 						step = "Step3-1";
 						areaRatioVO = buildAreaRatioVO(result, step, pyojebuData);
-						//areaRatioRepository.save(areaRatioVO);
-						
-						
+						// areaRatioRepository.save(areaRatioVO);
+
 						if (areaRatioVO.getResult() == null) {
 							step = "Step3-2";
-							calcResult = FormatUtil.round(Math.abs(1 - areaRatio / ((arCalcTotalArea / areaRatioVO.getAntiGroundAreaReplaceVal()) * 100)));
+							calcResult = FormatUtil.round(Math.abs(1 - areaRatio
+									/ ((arCalcTotalArea / areaRatioVO.getAntiGroundAreaReplaceVal()) * 100)));
 							pyojebuData.put("antiGroundAreaReplaceVal", areaRatioVO.getAntiGroundAreaReplaceVal());
-							
+
 							if (calcResult <= 0.01) {
 								result = "3";
 							} else {
 								result = "계산오류3";
 							}
-							
+
 							areaRatioVO = buildAreaRatioVO(result, step, pyojebuData);
 						}
-						
+
 						areaRatioRepository.save(areaRatioVO);
 
 					} else if (arCalcTotalArea == 0 && antiGroundArea == 0) { // step
@@ -279,29 +301,34 @@ public class AreaRatioService extends SimpleFileVisitor<Path> {
 
 						step = "Step4-1";
 						areaRatioVO = buildAreaRatioVO(result, step, pyojebuData);
-						//areaRatioRepository.save(areaRatioVO);
-						
+						// areaRatioRepository.save(areaRatioVO);
+
 						if (areaRatioVO.getResult() == null) {
 							step = "Step4-2";
-							pyojebuData.put("areaRatioCalcTotalAreaReplaceVal", areaRatioVO.getAreaRatioCalcTotalAreaReplaceVal());
+							pyojebuData.put("areaRatioCalcTotalAreaReplaceVal",
+									areaRatioVO.getAreaRatioCalcTotalAreaReplaceVal());
 							areaRatioVO = buildAreaRatioVO(result, step, pyojebuData);
-							//areaRatioRepository.save(areaRatioVO);
+							// areaRatioRepository.save(areaRatioVO);
 						}
-						
+
 						if (areaRatioVO.getResult() == null) {
 							step = "Step4-3";
-							calcResult = FormatUtil.round(Math.abs(1 - areaRatio / ((areaRatioVO.getAreaRatioCalcTotalAreaReplaceVal() / areaRatioVO.getAntiGroundAreaReplaceVal()) * 100)));
+							calcResult = FormatUtil
+									.round(Math.abs(1 - areaRatio / ((areaRatioVO.getAreaRatioCalcTotalAreaReplaceVal()
+											/ areaRatioVO.getAntiGroundAreaReplaceVal()) * 100)));
 							pyojebuData.put("antiGroundAreaReplaceVal", areaRatioVO.getAntiGroundAreaReplaceVal());
-							
+
 							if (calcResult <= 0.01) {
 								result = "4";
 							} else {
 								result = "계산오류4";
 							}
-							
-							//pyojebuData.put("arCalcTotalArea", areaRatioVO.getAreaRatioCalcTotalAreaReplaceVal());
-							//pyojebuData.put("antiGroundArea", areaRatioVO.getAntiGroundAreaReplaceVal());
-							
+
+							// pyojebuData.put("arCalcTotalArea",
+							// areaRatioVO.getAreaRatioCalcTotalAreaReplaceVal());
+							// pyojebuData.put("antiGroundArea",
+							// areaRatioVO.getAntiGroundAreaReplaceVal());
+
 							areaRatioVO = buildAreaRatioVO(result, step, pyojebuData);
 						}
 
@@ -311,44 +338,53 @@ public class AreaRatioService extends SimpleFileVisitor<Path> {
 					// STEP 5-1 ~ STEP 5-3
 					step = "Step5-1";
 					areaRatioVO = buildAreaRatioVO(result, step, pyojebuData);
-					//areaRatioRepository.save(areaRatioVO);
-					
+					// areaRatioRepository.save(areaRatioVO);
+
 					if (areaRatioVO.getResult() == null) {
 						step = "Step5-2";
-						pyojebuData.put("areaRatioCalcTotalAreaReplaceVal", areaRatioVO.getAreaRatioCalcTotalAreaReplaceVal());
+						pyojebuData.put("areaRatioCalcTotalAreaReplaceVal",
+								areaRatioVO.getAreaRatioCalcTotalAreaReplaceVal());
 						areaRatioVO = buildAreaRatioVO(result, step, pyojebuData);
-						//areaRatioRepository.save(areaRatioVO);
+						// areaRatioRepository.save(areaRatioVO);
 					}
-					
+
 					if (areaRatioVO.getResult() == null) {
 						step = "Step5-3";
-						
-						calcResult = (areaRatioVO.getAreaRatioCalcTotalAreaReplaceVal() / areaRatioVO.getAntiGroundAreaReplaceVal()) * 100;
+
+						calcResult = (areaRatioVO.getAreaRatioCalcTotalAreaReplaceVal()
+								/ areaRatioVO.getAntiGroundAreaReplaceVal()) * 100;
 						pyojebuData.put("antiGroundAreaReplaceVal", areaRatioVO.getAntiGroundAreaReplaceVal());
-						
+
 						if (calcResult <= 400) {
 							result = "5";
 						} else {
 							result = "계산오류5";
 						}
-						
-						//pyojebuData.put("arCalcTotalArea", areaRatioVO.getAreaRatioCalcTotalAreaReplaceVal());
-						//pyojebuData.put("antiGroundArea", areaRatioVO.getAntiGroundAreaReplaceVal());
+
+						// pyojebuData.put("arCalcTotalArea",
+						// areaRatioVO.getAreaRatioCalcTotalAreaReplaceVal());
+						// pyojebuData.put("antiGroundArea",
+						// areaRatioVO.getAntiGroundAreaReplaceVal());
 						areaRatioVO = buildAreaRatioVO(result, step, pyojebuData);
-						
+
 					}
-					
+
 					areaRatioRepository.save(areaRatioVO);
 				}
 
 			}
 
 		} catch (Exception e) {
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw));
+			String exceptionAsString = sw.toString();
+
 			AreaRatioError areaRatioError = new AreaRatioError();
 			areaRatioError.setFilePath(params.get("filePath").toString());
-			areaRatioError.setErrorMsg(e.getMessage());
+			areaRatioError.setErrorMsg(exceptionAsString);
+
 			areaRatioErrorRepository.save(areaRatioError);
-			
+
 			e.printStackTrace();
 		}
 
@@ -418,14 +454,15 @@ public class AreaRatioService extends SimpleFileVisitor<Path> {
 	}
 
 	private boolean isDasedaeFromCityTypeHouse(String[] data, StringBuilder jibunLocation) throws IOException {
-		
+
 		boolean rtnVal = false;
 
-		boolean isExistOneRoom = isExistOneRoom(Integer.parseInt(data[8]), Integer.parseInt(data[9]), Integer.parseInt(data[11]), Integer.parseInt(data[12]));
+		boolean isExistOneRoom = isExistOneRoom(Integer.parseInt(data[8]), Integer.parseInt(data[9]),
+				Integer.parseInt(data[11]), Integer.parseInt(data[12]));
 		String jygyFilePath = this.jygyAreaFileArr[0] + jibunLocation.toString() + jygyAreaFileArr[1];
-		
+
 		rtnVal = calcDasedaeFromFloor(jygyFilePath, isExistOneRoom);
-		
+
 		return rtnVal;
 	}
 
@@ -472,7 +509,7 @@ public class AreaRatioService extends SimpleFileVisitor<Path> {
 				floorSet.add(_arr[25]);
 			}
 		}
-		
+
 		if (isExistOneRoom) {
 			if (floorSet.size() > 0) {
 				rtnVal = true;
@@ -490,9 +527,9 @@ public class AreaRatioService extends SimpleFileVisitor<Path> {
 	 * areaRatio VO BULID 한다.
 	 * 
 	 * @return
-	 * @throws IOException
+	 * @throws Exception
 	 */
-	private AreaRatio buildAreaRatioVO(String result, String step, Map pyojebuData) throws IOException {
+	private AreaRatio buildAreaRatioVO(String result, String step, Map pyojebuData) throws Exception {
 
 		AreaRatio areaRatio = new AreaRatio();
 
@@ -509,26 +546,27 @@ public class AreaRatioService extends SimpleFileVisitor<Path> {
 		areaRatio.setDong(dong);
 		areaRatio.setJibun1(jibun1);
 		areaRatio.setJibun2(jibun2);
-		areaRatio.setArCalcTotalArea((float)pyojebuData.get("arCalcTotalArea")); // 용적률산정연면적
-		areaRatio.setTotalArea((float)pyojebuData.get("totalArea")); // 연면적
-		areaRatio.setUnderGroundFloor((int)pyojebuData.get("underGroundFloor")); // 지하층수
-		
-		// 요청 메소드에서 areaRatioCalcTotalAreaReplaceVal, antiGroundAreaReplaceVal 값이 넘어오면 해당 값을 set 한다.
+		areaRatio.setArCalcTotalArea((float) pyojebuData.get("arCalcTotalArea")); // 용적률산정연면적
+		areaRatio.setTotalArea((float) pyojebuData.get("totalArea")); // 연면적
+		areaRatio.setUnderGroundFloor((int) pyojebuData.get("underGroundFloor")); // 지하층수
+
+		// 요청 메소드에서 areaRatioCalcTotalAreaReplaceVal, antiGroundAreaReplaceVal
+		// 값이 넘어오면 해당 값을 set 한다.
 		float areaRatioCalcTotalAreaReplaceVal = (float) pyojebuData.get("areaRatioCalcTotalAreaReplaceVal");
 		float antiGroundAreaReplaceVal = (float) pyojebuData.get("antiGroundAreaReplaceVal");
-		
+
 		if (areaRatioCalcTotalAreaReplaceVal > 0) {
 			areaRatio.setAreaRatioCalcTotalAreaReplaceVal(areaRatioCalcTotalAreaReplaceVal);
 		}
-		
+
 		if (antiGroundAreaReplaceVal > 0) {
 			areaRatio.setAntiGroundAreaReplaceVal(antiGroundAreaReplaceVal);
 		}
-		
+
 		// 주소
 		areaRatio.setAddress(pyojebuData.get("address").toString());
 		areaRatio.setRoadAddress(pyojebuData.get("roadAddress").toString());
-		
+
 		StringBuilder filePath = new StringBuilder();
 
 		filePath.append("1");
@@ -548,11 +586,11 @@ public class AreaRatioService extends SimpleFileVisitor<Path> {
 		// 지상전유공용면적합산
 		areaRatio.setGroundPrivatePublicSum(
 				getGroundPrivatePublicSum(this.jygyAreaFileArr[0] + filePath.toString() + this.jygyAreaFileArr[1]));
-		areaRatio.setAreaRatio((float)pyojebuData.get("areaRatio")); // 용적률
+		areaRatio.setAreaRatio((float) pyojebuData.get("areaRatio")); // 용적률
 		// 외필지
-		areaRatio.setOutsideParcel((int)pyojebuData.get("outsideParcel"));
+		areaRatio.setOutsideParcel((int) pyojebuData.get("outsideParcel"));
 		// 대지면적
-		areaRatio.setAntiGroundArea((float)pyojebuData.get("antiGroundArea"));
+		areaRatio.setAntiGroundArea((float) pyojebuData.get("antiGroundArea"));
 
 		// 토지대장면적(합산)
 		// 대표지번의 토지면적
@@ -584,8 +622,9 @@ public class AreaRatioService extends SimpleFileVisitor<Path> {
 		// 대지권비율의 분모값
 		areaRatio.setAntiGroundRatioDenominator(
 				getAntiGroundRatioDenominator(this.djgiFileArr[0] + filePath.toString() + this.djgiFileArr[1]));
-		
-		// ------------------------------------- 용적률 계산 ----------------------------------//
+
+		// ------------------------------------- 용적률 계산
+		// ----------------------------------//
 		float areaRatioCalc = 0f;
 		// 계산값 지정
 		float calcArTotalArea = 0f; // 용적률 산정면적
@@ -594,92 +633,113 @@ public class AreaRatioService extends SimpleFileVisitor<Path> {
 		} else {
 			calcArTotalArea = areaRatio.getArCalcTotalArea();
 		}
-		
+
 		float calcAntiGroundArea = 0f; // 대지면적
 		if (antiGroundAreaReplaceVal > 0) {
 			calcAntiGroundArea = antiGroundAreaReplaceVal;
 		} else {
 			calcAntiGroundArea = areaRatio.getAntiGroundArea();
 		}
-		
+
 		if (calcAntiGroundArea > 0) {
 			areaRatioCalc = (calcArTotalArea / calcAntiGroundArea) * 100;
 		}
-		
+
 		areaRatio.setAreaRatioCalc(FormatUtil.round(areaRatioCalc));
-		//-----------------------------------------------------------------------------------//
-		
-		
+		// -----------------------------------------------------------------------------------//
+
 		// 용적률산정연면적대체값
 		// 대지면적대체값
 		float _areaRatioCalcTotalAreaReplaceVal = 0f;
 		float _antiGroundAreaReplaceVal = 0f;
-		
+
 		switch (step) {
-			case "Step2-1":
+		case "Step1-1":
+
+			if (result == null) {
+
+				// 용적률 산정면적과 대지면적을 동시에 클린징 한다.
 				_areaRatioCalcTotalAreaReplaceVal = getArCalcTotalAreaCleansing(areaRatio.getGroundEachFloorSum(),
 						areaRatio.getArCalcTotalArea(), areaRatio.getGroundPrivatePublicSum());
-				if (_areaRatioCalcTotalAreaReplaceVal != -1) {
-					areaRatio.setAreaRatioCalcTotalAreaReplaceVal(_areaRatioCalcTotalAreaReplaceVal);
-				} else {
-					areaRatio.setResult("용적율산정연면적 결측값 보완불가");
-				}
-				break;
-	
-			case "Step3-1":
 				_antiGroundAreaReplaceVal = getAntiGroundAreaCleansing(areaRatio.getAntiGroundArea(),
 						areaRatio.getLandArea(), areaRatio.getEachOffcialPriceArea(),
 						areaRatio.getAntiGroundRatioDenominator());
-				if (_antiGroundAreaReplaceVal != -1) {
-					areaRatio.setAntiGroundAreaReplaceVal(_antiGroundAreaReplaceVal);
-				} else {
-					areaRatio.setResult("(외)대지면적 결측값 보완불가");
-				}
-				break;
-	
-			case "Step4-1":
-				_areaRatioCalcTotalAreaReplaceVal = getArCalcTotalAreaCleansing(areaRatio.getGroundEachFloorSum(),
-						areaRatio.getArCalcTotalArea(), areaRatio.getGroundPrivatePublicSum());
-				if (_areaRatioCalcTotalAreaReplaceVal != -1) {
+
+				if (_areaRatioCalcTotalAreaReplaceVal != -1 && _antiGroundAreaReplaceVal != -1) {
 					areaRatio.setAreaRatioCalcTotalAreaReplaceVal(_areaRatioCalcTotalAreaReplaceVal);
-				} else {
-					areaRatio.setResult("용적율산정연면적 결측값 보완불가");
-				}
-				break;
-	
-			case "Step4-2":
-				_antiGroundAreaReplaceVal = getAntiGroundAreaCleansing(areaRatio.getAntiGroundArea(),
-						areaRatio.getLandArea(), areaRatio.getEachOffcialPriceArea(),
-						areaRatio.getAntiGroundRatioDenominator());
-				if (_antiGroundAreaReplaceVal != -1) {
 					areaRatio.setAntiGroundAreaReplaceVal(_antiGroundAreaReplaceVal);
 				} else {
-					areaRatio.setResult("(외)대지면적 결측값 보완불가");
+					areaRatio.setResult("용적율산정연면적 또는(외)대지면적 결측값 보완불가");
 				}
-				break;
-	
-			case "Step5-1":
-				_areaRatioCalcTotalAreaReplaceVal = getArCalcTotalAreaCleansing(areaRatio.getGroundEachFloorSum(),
-						areaRatio.getArCalcTotalArea(), areaRatio.getGroundPrivatePublicSum());
-				if (_areaRatioCalcTotalAreaReplaceVal != -1) {
-					areaRatio.setAreaRatioCalcTotalAreaReplaceVal(_areaRatioCalcTotalAreaReplaceVal);
-				} else {
-					areaRatio.setResult("용적율산정연면적 클린징실패");
-				}
-				break;
-	
-			case "Step5-2":
-				_antiGroundAreaReplaceVal = getAntiGroundAreaCleansing(areaRatio.getAntiGroundArea(),
-						areaRatio.getLandArea(), areaRatio.getEachOffcialPriceArea(),
-						areaRatio.getAntiGroundRatioDenominator());
-				if (_antiGroundAreaReplaceVal != -1) {
-					areaRatio.setAntiGroundAreaReplaceVal(_antiGroundAreaReplaceVal);
-				} else {
-					areaRatio.setResult("(외)대지면적 클린징실패");
-				}
-				break;
+
+			}
+
+			break;
+
+		case "Step2-1":
+			_areaRatioCalcTotalAreaReplaceVal = getArCalcTotalAreaCleansing(areaRatio.getGroundEachFloorSum(),
+					areaRatio.getArCalcTotalArea(), areaRatio.getGroundPrivatePublicSum());
+			if (_areaRatioCalcTotalAreaReplaceVal != -1) {
+				areaRatio.setAreaRatioCalcTotalAreaReplaceVal(_areaRatioCalcTotalAreaReplaceVal);
+			} else {
+				areaRatio.setResult("용적율산정연면적 결측값 보완불가");
+			}
+			break;
+
+		case "Step3-1":
+			_antiGroundAreaReplaceVal = getAntiGroundAreaCleansing(areaRatio.getAntiGroundArea(),
+					areaRatio.getLandArea(), areaRatio.getEachOffcialPriceArea(),
+					areaRatio.getAntiGroundRatioDenominator());
+			if (_antiGroundAreaReplaceVal != -1) {
+				areaRatio.setAntiGroundAreaReplaceVal(_antiGroundAreaReplaceVal);
+			} else {
+				areaRatio.setResult("(외)대지면적 결측값 보완불가");
+			}
+			break;
+
+		case "Step4-1":
+			_areaRatioCalcTotalAreaReplaceVal = getArCalcTotalAreaCleansing(areaRatio.getGroundEachFloorSum(),
+					areaRatio.getArCalcTotalArea(), areaRatio.getGroundPrivatePublicSum());
+			if (_areaRatioCalcTotalAreaReplaceVal != -1) {
+				areaRatio.setAreaRatioCalcTotalAreaReplaceVal(_areaRatioCalcTotalAreaReplaceVal);
+			} else {
+				areaRatio.setResult("용적율산정연면적 결측값 보완불가");
+			}
+			break;
+
+		case "Step4-2":
+			_antiGroundAreaReplaceVal = getAntiGroundAreaCleansing(areaRatio.getAntiGroundArea(),
+					areaRatio.getLandArea(), areaRatio.getEachOffcialPriceArea(),
+					areaRatio.getAntiGroundRatioDenominator());
+			if (_antiGroundAreaReplaceVal != -1) {
+				areaRatio.setAntiGroundAreaReplaceVal(_antiGroundAreaReplaceVal);
+			} else {
+				areaRatio.setResult("(외)대지면적 결측값 보완불가");
+			}
+			break;
+
+		case "Step5-1":
+			_areaRatioCalcTotalAreaReplaceVal = getArCalcTotalAreaCleansing(areaRatio.getGroundEachFloorSum(),
+					areaRatio.getArCalcTotalArea(), areaRatio.getGroundPrivatePublicSum());
+			if (_areaRatioCalcTotalAreaReplaceVal != -1) {
+				areaRatio.setAreaRatioCalcTotalAreaReplaceVal(_areaRatioCalcTotalAreaReplaceVal);
+			} else {
+				areaRatio.setResult("용적율산정연면적 클린징실패");
+			}
+			break;
+
+		case "Step5-2":
+			_antiGroundAreaReplaceVal = getAntiGroundAreaCleansing(areaRatio.getAntiGroundArea(),
+					areaRatio.getLandArea(), areaRatio.getEachOffcialPriceArea(),
+					areaRatio.getAntiGroundRatioDenominator());
+			if (_antiGroundAreaReplaceVal != -1) {
+				areaRatio.setAntiGroundAreaReplaceVal(_antiGroundAreaReplaceVal);
+			} else {
+				areaRatio.setResult("(외)대지면적 클린징실패");
+			}
+			break;
 		}
-		
+
 		return areaRatio;
 	}
 
@@ -687,23 +747,26 @@ public class AreaRatioService extends SimpleFileVisitor<Path> {
 	 * 층별 개요 합산을 리턴한다.
 	 * 
 	 * @return
-	 * @throws IOException
+	 * @throws Exception
 	 */
-	private float getGroundEachFloorSum(String filePath) throws IOException {
+	private float getGroundEachFloorSum(String filePath) {
 
 		float rtnAntiGroundArea = 0f;
 
-		List<String[]> floorArrList = FileUtil.readFileToStringArrayList(filePath, "|");
+		List<String[]> floorArrList;
+		try {
+			floorArrList = FileUtil.readFileToStringArrayList(filePath, "|");
+			int floor = 0;
 
-		int floor = 0;
-
-		for (String[] _arr : floorArrList) {
-			floor = Integer.parseInt(_arr[18]);
-			if (floor >= 20 && floor < 30) {
-				if (!_arr[27].contains("제외") || !_arr[27].contains("차")) {
-					rtnAntiGroundArea += Float.parseFloat(_arr[28]);
+			for (String[] _arr : floorArrList) {
+				floor = Integer.parseInt(_arr[18]);
+				if (floor >= 20 && floor < 30) {
+					if (!_arr[27].contains("제외") || !_arr[27].contains("차")) {
+						rtnAntiGroundArea += Float.parseFloat(_arr[28]);
+					}
 				}
 			}
+		} catch (IOException e) {
 		}
 
 		return FormatUtil.round(rtnAntiGroundArea);
@@ -713,24 +776,31 @@ public class AreaRatioService extends SimpleFileVisitor<Path> {
 	 * 지상전유공용면적 합산을 리턴한다.
 	 * 
 	 * @return
-	 * @throws IOException
+	 * @throws Exception
 	 */
-	private float getGroundPrivatePublicSum(String filePath) throws IOException {
+	private float getGroundPrivatePublicSum(String filePath) {
 
 		float rtnAntiGroundArea = 0f;
 
-		List<String[]> jygyArrList = FileUtil.readFileToStringArrayList(filePath, "|");
-
-		int floor = 0;
-
-		for (String[] _arr : jygyArrList) {
-			//StringUtil.printIndexData(_arr, "전유공용구분");
-			floor = Integer.parseInt(_arr[23]);
-
-			if ((floor >= 20 && floor < 30) && !_arr[36].contains("차")) {
-				rtnAntiGroundArea += Float.parseFloat(_arr[37]);
+		List<String[]> jygyArrList;
+		try {
+			jygyArrList = FileUtil.readFileToStringArrayList(filePath, "|");
+		
+			int floor = 0;
+			
+			for (String[] _arr : jygyArrList) {
+				// StringUtil.printIndexData(_arr, "전유공용구분");
+				if (_arr[23].length() > 0) {
+					floor = Integer.parseInt(_arr[23]);
+				}
+				
+				if ((floor >= 20 && floor < 30) && !_arr[36].contains("차")) {
+					rtnAntiGroundArea += Float.parseFloat(_arr[37]);
+				}
 			}
+		} catch (IOException e) {
 		}
+
 
 		return FormatUtil.round(rtnAntiGroundArea);
 	}
@@ -741,18 +811,27 @@ public class AreaRatioService extends SimpleFileVisitor<Path> {
 	 * @return
 	 * @throws IOException
 	 */
-	private float getAntiGroundRatioDenominator(String filePath) throws IOException {
+	private float getAntiGroundRatioDenominator(String filePath) {
 
 		float rtnDenominator = 0f;
-		
-		List<String[]> djgiArrList = FileUtil.readFileToStringArrayList(filePath, ",");
-		for (String[] _arr : djgiArrList) {
-			//StringUtil.printIndexData(_arr, "대지권등록정보");
-			if (_arr[12].length() > 0) {
 
-				rtnDenominator = Float.parseFloat(_arr[12].split("\\/")[1]);
-				break;
+		List<String[]> djgiArrList;
+		try {
+			djgiArrList = FileUtil.readFileToStringArrayList(filePath, ",");
+			for (String[] _arr : djgiArrList) {
+				// StringUtil.printIndexData(_arr, "대지권등록정보");
+				if (_arr[12].length() > 0) {
+
+					try {
+						rtnDenominator = Float.parseFloat(_arr[12].split("\\/")[1]);
+						break;
+					} catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
+						rtnDenominator = 0f;
+					}
+				}
 			}
+		} catch (IOException e1) {
+
 		}
 
 		return rtnDenominator;
@@ -764,15 +843,21 @@ public class AreaRatioService extends SimpleFileVisitor<Path> {
 	 * @return
 	 * @throws IOException
 	 */
-	private float getLandArea(String filePath) throws IOException {
+	private float getLandArea(String filePath) {
 
 		float rtnLandAreaSum = 0f;
 
-		List<String[]> tjArrList = FileUtil.readFileToStringArrayList(filePath, ",");
-
-		for (String[] _arr : tjArrList) {
-			// StringUtil.printIndexData(_arr, "토지임야");
-			rtnLandAreaSum += Float.parseFloat(_arr[8]);
+		List<String[]> tjArrList;
+		try {
+			tjArrList = FileUtil.readFileToStringArrayList(filePath, ",");
+			for (String[] _arr : tjArrList) {
+				// StringUtil.printIndexData(_arr, "토지임야");
+				// 대장구분 코드가 1인 값만 합산 (구분코드 1:토지대장 2:임야대장)
+				if (_arr[4].equals("1")) {
+					rtnLandAreaSum += Float.parseFloat(_arr[8]);
+				}
+			}
+		} catch (IOException e) {
 		}
 
 		return rtnLandAreaSum;
@@ -784,26 +869,30 @@ public class AreaRatioService extends SimpleFileVisitor<Path> {
 	 * @return
 	 * @throws IOException
 	 */
-	private Set<String> getBsJibunList(String filePath) throws IOException {
+	private Set<String> getBsJibunList(String filePath) {
 
 		Set<String> rtnList = new HashSet<String>();
-		
+
 		// 부속지번이 존재하는 경우
-		List<String[]> bsJibunList = FileUtil.readFileToStringArrayList(filePath, "|");
-		String _filePath = null;
-		
-		for (String[] _arr : bsJibunList) {
-			// 대장 구분코드가 "2" 이고 부속 대장 구분 코드가 "0"인 부속지번
-			if (_arr[1].equals("2") && _arr[25].equals("0")) {
-				//StringUtil.printIndexData(_arr, "부속지번");
-				_filePath = 1 + "\\";
-				_filePath += Integer.parseInt(_arr[23]) + "\\";
-				_filePath += Integer.parseInt(_arr[24]) + "\\";
-				_filePath += Integer.parseInt(_arr[26]) + "\\";
-				_filePath += Integer.parseInt(_arr[27]) + "\\";
-				
-				rtnList.add(_filePath);
+		List<String[]> bsJibunList;
+		try {
+			bsJibunList = FileUtil.readFileToStringArrayList(filePath, "|");
+			String _filePath = null;
+			
+			for (String[] _arr : bsJibunList) {
+				// 대장 구분코드가 "2" 이고 부속 대장 구분 코드가 "0"인 부속지번
+				if (_arr[1].equals("2") && _arr[25].equals("0")) {
+					// StringUtil.printIndexData(_arr, "부속지번");
+					_filePath = 1 + "\\";
+					_filePath += Integer.parseInt(_arr[23]) + "\\";
+					_filePath += Integer.parseInt(_arr[24]) + "\\";
+					_filePath += Integer.parseInt(_arr[26]) + "\\";
+					_filePath += Integer.parseInt(_arr[27]) + "\\";
+					
+					rtnList.add(_filePath);
+				}
 			}
+		} catch (IOException e) {
 		}
 
 		return rtnList;
@@ -816,15 +905,18 @@ public class AreaRatioService extends SimpleFileVisitor<Path> {
 	 * @return
 	 * @throws IOException
 	 */
-	private float getEachOffcialPriceArea(String filePath) throws IOException {
+	private float getEachOffcialPriceArea(String filePath) {
 
 		float eachOffcialPriceArea = 0f;
 
-		List<String[]> eachOfficeArrList = FileUtil.readFileToStringArrayList(filePath, ",");
-
-		for (String[] _arr : eachOfficeArrList) {
-			// StringUtil.printIndexData(_arr, "개별공시지가");
-			eachOffcialPriceArea += Float.parseFloat(_arr[13]);
+		List<String[]> eachOfficeArrList;
+		try {
+			eachOfficeArrList = FileUtil.readFileToStringArrayList(filePath, ",");
+			for (String[] _arr : eachOfficeArrList) {
+				// StringUtil.printIndexData(_arr, "개별공시지가");
+				eachOffcialPriceArea += Float.parseFloat(_arr[13]);
+			}
+		} catch (IOException e) {
 		}
 
 		return eachOffcialPriceArea;
@@ -840,21 +932,33 @@ public class AreaRatioService extends SimpleFileVisitor<Path> {
 	 * @param groundPrivatePublicSum
 	 *            지상전유고용합산
 	 * @return
+	 * @throws Exception
 	 */
 	private float getArCalcTotalAreaCleansing(float groundEachFloorSum, float arCalcTotalArea,
 			float groundPrivatePublicSum) {
 
 		float areaRatioCalcTotalAreaReplaceVal = 0f;
+		float calcFloorDivideAreaRatio = 1f;
+		float calcGroundPrivatePublicDivideAreaRatio = 1f;
+		float calcFloorDivideGroundPrivatePublic = 1f;
 
-		float calcFloorDivideAreaRatio = FormatUtil.round(Math.abs(1 - (groundEachFloorSum / arCalcTotalArea)));
-		float calcGroundPrivatePublicDivideAreaRatio = FormatUtil
-				.round(Math.abs(1 - (groundPrivatePublicSum / arCalcTotalArea)));
-		float calcFloorDivideGroundPrivatePublic = FormatUtil
-				.round(Math.abs(1 - (groundEachFloorSum / groundPrivatePublicSum)));
+		if (groundEachFloorSum > 0 && arCalcTotalArea > 0) {
+			calcFloorDivideAreaRatio = FormatUtil.round(Math.abs(1 - (groundEachFloorSum / arCalcTotalArea)));
+		}
 
-		if (calcFloorDivideAreaRatio <= 0.01 || calcGroundPrivatePublicDivideAreaRatio <= 0.01) {
+		if (groundPrivatePublicSum > 0 && arCalcTotalArea > 0) {
+			calcGroundPrivatePublicDivideAreaRatio = FormatUtil
+					.round(Math.abs(1 - (groundPrivatePublicSum / arCalcTotalArea)));
+		}
+
+		if (groundEachFloorSum > 0 && groundPrivatePublicSum > 0) {
+			calcFloorDivideGroundPrivatePublic = FormatUtil
+					.round(Math.abs(1 - (groundEachFloorSum / groundPrivatePublicSum)));
+		}
+
+		if (calcFloorDivideAreaRatio <= 0.02 || calcGroundPrivatePublicDivideAreaRatio <= 0.02) {
 			areaRatioCalcTotalAreaReplaceVal = arCalcTotalArea;
-		} else if (calcFloorDivideGroundPrivatePublic <= 0.01) {
+		} else if (calcFloorDivideGroundPrivatePublic <= 0.02) {
 			areaRatioCalcTotalAreaReplaceVal = groundEachFloorSum;
 		} else {
 			// 결측값보완불가
@@ -875,21 +979,45 @@ public class AreaRatioService extends SimpleFileVisitor<Path> {
 	 * @param antiGroundRatioDenominator
 	 *            // 대지권비율분모
 	 * @return
+	 * @throws Exception
 	 */
 	private float getAntiGroundAreaCleansing(float antiGroundArea, float landArea, float eachOffcialPriceArea,
 			float antiGroundRatioDenominator) {
 
 		float antiGroundAreaReplaceVal = 0f;
+		float calcAntiGroundDivideLandArea = 1f;
+		float calcAntiGroundDivideEachOffice = 1f;
+		float calcAntiGroundDivideAntiGroundRatioDenominator = 1f;
+		float calcEachOfficeDivideLandArea = 1f;
+		float calcAntiGroundRatioDenominatorDivideEachOffice = 1f;
+		float calcAntiGroundRatioDenominatorDivideLandArea = 1f;
 
-		float calcAntiGroundDivideLandArea = FormatUtil.round(Math.abs(1 - (antiGroundArea / landArea)));
-		float calcAntiGroundDivideEachOffice = FormatUtil.round(Math.abs(1 - (antiGroundArea / eachOffcialPriceArea)));
-		float calcAntiGroundDivideAntiGroundRatioDenominator = FormatUtil
-				.round(Math.abs(1 - (antiGroundArea / antiGroundRatioDenominator)));
-		float calcEachOfficeDivideLandArea = FormatUtil.round(Math.abs(1 - (eachOffcialPriceArea / landArea)));
-		float calcAntiGroundRatioDenominatorDivideEachOffice = FormatUtil
-				.round(Math.abs(1 - (antiGroundRatioDenominator / eachOffcialPriceArea)));
-		float calcAntiGroundRatioDenominatorDivideLandArea = FormatUtil
-				.round(Math.abs(1 - (antiGroundRatioDenominator / landArea)));
+		if (antiGroundArea > 0 && landArea > 0) {
+			calcAntiGroundDivideLandArea = FormatUtil.round(Math.abs(1 - (antiGroundArea / landArea)));
+		}
+
+		if (antiGroundArea > 0 && eachOffcialPriceArea > 0) {
+			calcAntiGroundDivideEachOffice = FormatUtil.round(Math.abs(1 - (antiGroundArea / eachOffcialPriceArea)));
+		}
+
+		if (antiGroundArea > 0 && antiGroundRatioDenominator > 0) {
+			calcAntiGroundDivideAntiGroundRatioDenominator = FormatUtil
+					.round(Math.abs(1 - (antiGroundArea / antiGroundRatioDenominator)));
+		}
+
+		if (eachOffcialPriceArea > 0 && landArea > 0) {
+			calcEachOfficeDivideLandArea = FormatUtil.round(Math.abs(1 - (eachOffcialPriceArea / landArea)));
+		}
+
+		if (antiGroundRatioDenominator > 0 && eachOffcialPriceArea > 0) {
+			calcAntiGroundRatioDenominatorDivideEachOffice = FormatUtil
+					.round(Math.abs(1 - (antiGroundRatioDenominator / eachOffcialPriceArea)));
+		}
+
+		if (antiGroundRatioDenominator > 0 && landArea > 0) {
+			calcAntiGroundRatioDenominatorDivideLandArea = FormatUtil
+					.round(Math.abs(1 - (antiGroundRatioDenominator / landArea)));
+		}
 
 		if (calcAntiGroundDivideLandArea <= 0.05 || calcAntiGroundDivideEachOffice <= 0.05
 				|| calcAntiGroundDivideAntiGroundRatioDenominator <= 0.05) {

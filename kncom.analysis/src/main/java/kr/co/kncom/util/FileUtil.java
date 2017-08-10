@@ -59,7 +59,7 @@ public class FileUtil {
 			if (indexOf != -1) {
 				lastIndexOf = strLine.lastIndexOf("\"");
 				_str = strLine.substring(indexOf, lastIndexOf+1);
-				_replaceStr = _str.replace(",", "|");
+				_replaceStr = _str.replaceAll("[\\,\"]", "");
 				
 				strLine = strLine.replace(_str, _replaceStr);
 			}
