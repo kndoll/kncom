@@ -23,6 +23,7 @@ import kr.co.kncom.repository.AreaRatioRepository;
 import kr.co.kncom.repository.JttypelistRepository;
 import kr.co.kncom.util.FileUtil;
 import kr.co.kncom.util.FormatUtil;
+import kr.co.kncom.util.StringUtil;
 
 @Service
 public class AreaRatioService extends SimpleFileVisitor<Path> {
@@ -819,13 +820,15 @@ public class AreaRatioService extends SimpleFileVisitor<Path> {
 			djgiArrList = FileUtil.readFileToStringArrayList(filePath, ",");
 			for (String[] _arr : djgiArrList) {
 				// StringUtil.printIndexData(_arr, "대지권등록정보");
-				if (_arr[12].length() > 0) {
-
-					try {
-						rtnDenominator = Float.parseFloat(_arr[12].split("\\/")[1]);
-						break;
-					} catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
-						rtnDenominator = 0f;
+				if (_arr[5].equals("1")) {
+					if (_arr[12].length() > 0) {
+						
+						try {
+							rtnDenominator = Float.parseFloat(_arr[12].split("\\/")[1]);
+							break;
+						} catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
+							rtnDenominator = 0f;
+						}
 					}
 				}
 			}
@@ -857,6 +860,7 @@ public class AreaRatioService extends SimpleFileVisitor<Path> {
 				}
 			}
 		} catch (IOException e) {
+			e.printStackTrace();
 		}
 
 		return rtnLandAreaSum;
@@ -892,6 +896,7 @@ public class AreaRatioService extends SimpleFileVisitor<Path> {
 				}
 			}
 		} catch (IOException e) {
+			e.printStackTrace();
 		}
 
 		return rtnList;
@@ -913,9 +918,12 @@ public class AreaRatioService extends SimpleFileVisitor<Path> {
 			eachOfficeArrList = FileUtil.readFileToStringArrayList(filePath, ",");
 			for (String[] _arr : eachOfficeArrList) {
 				// StringUtil.printIndexData(_arr, "개별공시지가");
-				eachOffcialPriceArea += Float.parseFloat(_arr[13]);
+				if (_arr[3].equals("1")) {
+					eachOffcialPriceArea += Float.parseFloat(_arr[13]);
+				}
 			}
 		} catch (IOException e) {
+			e.printStackTrace();
 		}
 
 		return eachOffcialPriceArea;

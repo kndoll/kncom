@@ -1,53 +1,36 @@
 package kr.co.kncom.createData;
 
 import java.io.IOException;
-import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.SimpleFileVisitor;
-import java.nio.file.attribute.BasicFileAttributes;
 
-public class areaRatio extends SimpleFileVisitor<Path> {
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.stereotype.Component;
 
-	@Override
-	public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
-		//System.out.println("## preVisitDirectory ==> " + dir);
-		return super.preVisitDirectory(dir, attrs);
-	}
+import kr.co.kncom.service.AreaRatioService;
 
-	@Override
-	public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-		System.out.println("## visitFile ==> " + file);
-		
-		if (file.getFileName().equals("daejang_pyojebu.dat")) {
-			// 여기서 서비스 호출
-			
-		}
-		
-		return super.visitFile(file, attrs);
-	}
-
-	@Override
-	public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
-		//System.out.println("## visitFileFailed ==> " + file);
-		return super.visitFileFailed(file, exc);
-	}
-
-	@Override
-	public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
-		//System.out.println("## postVisitDirectory ==> " + dir);
-		return super.postVisitDirectory(dir, exc);
-	}
+@Component
+public class areaRatio implements CommandLineRunner {
 	
-	public static void main(String[] args) {
-	    Path path = Paths.get("F:\\201704lobig");
-	    areaRatio mySimpleFileVisitor = new areaRatio();
-	     
-	    try {
-	        Files.walkFileTree(path, mySimpleFileVisitor);
-	    } catch (IOException ex) {
-	    }
+	@Autowired
+	private AreaRatioService areaRatioService;
+	
+	@Override
+	public void run(String... arg) throws Exception {
+		
+		if (arg.length > 0) {
+			if (arg[0].equals("arearatio")) {
+				Path path = Paths.get("X:\\201706lobig");
+				
+				try {
+					Files.walkFileTree(path, areaRatioService);
+				} catch (IOException ex) {
+					
+				}
+			}
+		}
 	}
 	
 }

@@ -23,11 +23,11 @@ public class AreaRatioServiceTest {
 	private AreaRatioService areaRatioService;
 	
 	@Test
-	public void insertAreaRatioTest() {
+	public void insertAreaR5atioTest() {
 		
 		/*
 		Map<String, String> params  = new HashMap<String, String>();
-		params.put("filePath", "X:\\201706lobig\\1\\11710\\10100\\223\\4\\daejang_pyojebu.dat"); // 1-1
+		params.put("filePath", "X:\\201706lobig\\1\\11350\\10500\\169\\1\\daejang_pyojebu.dat"); // 1-1
 		areaRatioService.insertAreaRatio(params);
 		
 		params.put("filePath", "F:\\201704lobig\\1\\11110\\11000\\126\\0\\daejang_pyojebu.dat"); // 2-1
