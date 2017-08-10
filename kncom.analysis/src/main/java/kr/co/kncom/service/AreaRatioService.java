@@ -766,7 +766,7 @@ public class AreaRatioService extends SimpleFileVisitor<Path> {
 					}
 				}
 			}
-		} catch (IOException e) {
+		} catch (IOException | NumberFormatException e) {
 		}
 
 		return FormatUtil.round(rtnAntiGroundArea);
@@ -798,7 +798,7 @@ public class AreaRatioService extends SimpleFileVisitor<Path> {
 					rtnAntiGroundArea += Float.parseFloat(_arr[37]);
 				}
 			}
-		} catch (IOException e) {
+		} catch (IOException | NumberFormatException e) {
 		}
 
 
@@ -832,8 +832,7 @@ public class AreaRatioService extends SimpleFileVisitor<Path> {
 					}
 				}
 			}
-		} catch (IOException e1) {
-
+		} catch (IOException | NumberFormatException e) {
 		}
 
 		return rtnDenominator;
@@ -859,7 +858,7 @@ public class AreaRatioService extends SimpleFileVisitor<Path> {
 					rtnLandAreaSum += Float.parseFloat(_arr[8]);
 				}
 			}
-		} catch (IOException e) {
+		} catch (IOException | NumberFormatException e) {
 			e.printStackTrace();
 		}
 
@@ -895,7 +894,7 @@ public class AreaRatioService extends SimpleFileVisitor<Path> {
 					rtnList.add(_filePath);
 				}
 			}
-		} catch (IOException e) {
+		} catch (IOException | NumberFormatException e) {
 			e.printStackTrace();
 		}
 
@@ -922,7 +921,7 @@ public class AreaRatioService extends SimpleFileVisitor<Path> {
 					eachOffcialPriceArea += Float.parseFloat(_arr[13]);
 				}
 			}
-		} catch (IOException e) {
+		} catch (IOException | NumberFormatException e) {
 			e.printStackTrace();
 		}
 
