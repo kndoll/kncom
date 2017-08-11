@@ -23,13 +23,12 @@ import kr.co.kncom.repository.AreaRatioRepository;
 import kr.co.kncom.repository.JttypelistRepository;
 import kr.co.kncom.util.FileUtil;
 import kr.co.kncom.util.FormatUtil;
-import kr.co.kncom.util.StringUtil;
 
 @Service
 public class AreaRatioService extends SimpleFileVisitor<Path> {
 
 	private final String[] totalPyojebuFileArr = { "X:\\201706lobig\\", "daejang_totalpyojebu.dat" }; // 총괄표제부
-	private final String[] pyojebuFileArr = { "X:\\201706lobig\\", "daejang_pyojebu.dat" }; // 총괄표제부
+	private final String[] pyojebuFileArr = { "X:\\201706lobig\\", "daejang_pyojebu.dat" }; // 표제부
 	private final String[] jygyAreaFileArr = { "X:\\201706lobig\\", "daejang_jygyarea.dat" }; // 전유공유
 	private final String[] floorGaeyoFileArr = { "X:\\201706lobig\\", "daejang_floorgaeyo.dat" }; // 층별개요
 	private final String[] djgiFileArr = { "J:\\Tjiy\\", "djgi.dat" }; // 대지권
