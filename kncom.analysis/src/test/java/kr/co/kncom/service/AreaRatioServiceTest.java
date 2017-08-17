@@ -34,7 +34,7 @@ public class AreaRatioServiceTest {
 		areaRatioService.insertAreaRatio(params);
 		
 		 */
-		Path path = Paths.get("X:\\201706lobig");
+		Path path = Paths.get("X:\\201706lobig\\1");
 		
 		try {
 		    Files.walkFileTree(path, areaRatioService);

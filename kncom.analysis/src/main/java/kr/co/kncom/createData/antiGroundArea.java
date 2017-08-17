@@ -22,7 +22,7 @@ public class antiGroundArea implements CommandLineRunner {
 		
 		if (arg.length > 0) {
 			if (arg[0].equals("antiGroundArea")) {
-				Path path = Paths.get("X:\\201706lobig");
+				Path path = Paths.get("X:\\201706lobig\\1");
 				
 				try {
 					Files.walkFileTree(path, antiGroundAreaService);
