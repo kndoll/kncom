@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,13 +25,13 @@ public class AntiGroundAreaServiceTest {
 		
 		/*
 		Map<String, String> params  = new HashMap<String, String>();
-		params.put("filePath", "X:\\201706lobig\\1\\11350\\10500\\169\\1\\daejang_pyojebu.dat"); // 1-1
-		areaRatioService.insertAreaRatio(params);
+		params.put("filePath", "X:\\201706lobig\\1\\11170\\10200\\1\\226\\daejang_pyojebu.dat"); // 1-1
+		antiGroundAreaService.insertAntiGroundArea(params);
 		
 		params.put("filePath", "F:\\201704lobig\\1\\11110\\11000\\126\\0\\daejang_pyojebu.dat"); // 2-1
 		areaRatioService.insertAreaRatio(params);
 		
-		*/
+		 */
 		
 		Path path = Paths.get("X:\\201706lobig");
 		

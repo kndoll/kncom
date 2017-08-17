@@ -14,14 +14,14 @@ import kr.co.kncom.util.FormatUtil;
 
 @Component
 public class RealtyStandardData {
-	
+
 	// properties로 추출해야 함.
 	private final String[] totalPyojebuFileArr = { "X:\\201706lobig\\", "daejang_totalpyojebu.dat" }; // 총괄표제부
 	private final String[] jygyAreaFileArr = { "X:\\201706lobig\\", "daejang_jygyarea.dat" }; // 전유공유
-	
+
 	@Autowired
 	private JttypelistRepository jttypelist;
-	
+
 	/**
 	 * 용적률 재계산 대상 데이터 인지 확인
 	 * 
@@ -155,8 +155,6 @@ public class RealtyStandardData {
 		return rtnVal;
 	}
 
-	
-
 	/**
 	 * 층별 개요 합산을 리턴한다.
 	 * 
@@ -183,7 +181,7 @@ public class RealtyStandardData {
 		} catch (IOException | NumberFormatException e) {
 		}
 
-		return FormatUtil.round(rtnAntiGroundArea);
+		return FormatUtil.ceil(rtnAntiGroundArea);
 	}
 
 	/**
@@ -199,15 +197,15 @@ public class RealtyStandardData {
 		List<String[]> jygyArrList;
 		try {
 			jygyArrList = FileUtil.readFileToStringArrayList(filePath, "|");
-		
+
 			int floor = 0;
-			
+
 			for (String[] _arr : jygyArrList) {
 				// StringUtil.printIndexData(_arr, "전유공용구분");
 				if (_arr[23].length() > 0) {
 					floor = Integer.parseInt(_arr[23]);
 				}
-				
+
 				if ((floor >= 20 && floor < 30) && !_arr[36].contains("차")) {
 					rtnAntiGroundArea += Float.parseFloat(_arr[37]);
 				}
@@ -215,8 +213,7 @@ public class RealtyStandardData {
 		} catch (IOException | NumberFormatException e) {
 		}
 
-
-		return FormatUtil.round(rtnAntiGroundArea);
+		return FormatUtil.ceil(rtnAntiGroundArea);
 	}
 
 	/**
@@ -236,7 +233,7 @@ public class RealtyStandardData {
 				// StringUtil.printIndexData(_arr, "대지권등록정보");
 				if (_arr[5].equals("1")) {
 					if (_arr[12].length() > 0) {
-						
+
 						try {
 							rtnDenominator = Float.parseFloat(_arr[12].split("\\/")[1]);
 							break;
@@ -294,7 +291,7 @@ public class RealtyStandardData {
 		try {
 			bsJibunList = FileUtil.readFileToStringArrayList(filePath, "|");
 			String _filePath = null;
-			
+
 			for (String[] _arr : bsJibunList) {
 				// 대장 구분코드가 "2" 이고 부속 대장 구분 코드가 "0"인 부속지번
 				if (_arr[1].equals("2") && _arr[25].equals("0")) {
@@ -304,7 +301,7 @@ public class RealtyStandardData {
 					_filePath += Integer.parseInt(_arr[24]) + "\\";
 					_filePath += Integer.parseInt(_arr[26]) + "\\";
 					_filePath += Integer.parseInt(_arr[27]) + "\\";
-					
+
 					rtnList.add(_filePath);
 				}
 			}
@@ -363,22 +360,22 @@ public class RealtyStandardData {
 		float calcFloorDivideGroundPrivatePublic = 1f;
 
 		if (groundEachFloorSum > 0 && arCalcTotalArea > 0) {
-			calcFloorDivideAreaRatio = FormatUtil.round(Math.abs(1 - (groundEachFloorSum / arCalcTotalArea)));
+			calcFloorDivideAreaRatio = FormatUtil.ceil(Math.abs(1 - (groundEachFloorSum / arCalcTotalArea)));
 		}
 
 		if (groundPrivatePublicSum > 0 && arCalcTotalArea > 0) {
 			calcGroundPrivatePublicDivideAreaRatio = FormatUtil
-					.round(Math.abs(1 - (groundPrivatePublicSum / arCalcTotalArea)));
+					.ceil(Math.abs(1 - (groundPrivatePublicSum / arCalcTotalArea)));
 		}
 
 		if (groundEachFloorSum > 0 && groundPrivatePublicSum > 0) {
 			calcFloorDivideGroundPrivatePublic = FormatUtil
-					.round(Math.abs(1 - (groundEachFloorSum / groundPrivatePublicSum)));
+					.ceil(Math.abs(1 - (groundEachFloorSum / groundPrivatePublicSum)));
 		}
 
-		if (calcFloorDivideAreaRatio <= 0.02 || calcGroundPrivatePublicDivideAreaRatio <= 0.02) {
+		if (Float.compare(calcFloorDivideAreaRatio, 0.02f) <= 0 || Float.compare(calcGroundPrivatePublicDivideAreaRatio, 0.02f) <= 0) {
 			areaRatioCalcTotalAreaReplaceVal = arCalcTotalArea;
-		} else if (calcFloorDivideGroundPrivatePublic <= 0.02) {
+		} else if (Float.compare(calcFloorDivideGroundPrivatePublic, 0.02f) <= 0) {
 			areaRatioCalcTotalAreaReplaceVal = groundEachFloorSum;
 		} else {
 			// 결측값보완불가
@@ -413,39 +410,39 @@ public class RealtyStandardData {
 		float calcAntiGroundRatioDenominatorDivideLandArea = 1f;
 
 		if (antiGroundArea > 0 && landArea > 0) {
-			calcAntiGroundDivideLandArea = FormatUtil.round(Math.abs(1 - (antiGroundArea / landArea)));
+			calcAntiGroundDivideLandArea = FormatUtil.ceil(Math.abs(1 - (antiGroundArea / landArea)));
 		}
 
 		if (antiGroundArea > 0 && eachOffcialPriceArea > 0) {
-			calcAntiGroundDivideEachOffice = FormatUtil.round(Math.abs(1 - (antiGroundArea / eachOffcialPriceArea)));
+			calcAntiGroundDivideEachOffice = FormatUtil.ceil(Math.abs(1 - (antiGroundArea / eachOffcialPriceArea)));
 		}
 
 		if (antiGroundArea > 0 && antiGroundRatioDenominator > 0) {
 			calcAntiGroundDivideAntiGroundRatioDenominator = FormatUtil
-					.round(Math.abs(1 - (antiGroundArea / antiGroundRatioDenominator)));
+					.ceil(Math.abs(1 - (antiGroundArea / antiGroundRatioDenominator)));
 		}
 
 		if (eachOffcialPriceArea > 0 && landArea > 0) {
-			calcEachOfficeDivideLandArea = FormatUtil.round(Math.abs(1 - (eachOffcialPriceArea / landArea)));
+			calcEachOfficeDivideLandArea = FormatUtil.ceil(Math.abs(1 - (eachOffcialPriceArea / landArea)));
 		}
 
 		if (antiGroundRatioDenominator > 0 && eachOffcialPriceArea > 0) {
 			calcAntiGroundRatioDenominatorDivideEachOffice = FormatUtil
-					.round(Math.abs(1 - (antiGroundRatioDenominator / eachOffcialPriceArea)));
+					.ceil(Math.abs(1 - (antiGroundRatioDenominator / eachOffcialPriceArea)));
 		}
 
 		if (antiGroundRatioDenominator > 0 && landArea > 0) {
 			calcAntiGroundRatioDenominatorDivideLandArea = FormatUtil
-					.round(Math.abs(1 - (antiGroundRatioDenominator / landArea)));
+					.ceil(Math.abs(1 - (antiGroundRatioDenominator / landArea)));
 		}
-
-		if (calcAntiGroundDivideLandArea <= 0.05 || calcAntiGroundDivideEachOffice <= 0.05
-				|| calcAntiGroundDivideAntiGroundRatioDenominator <= 0.05) {
+		
+		if (Float.compare(calcAntiGroundDivideLandArea, 0.05f) <= 0 || Float.compare(calcAntiGroundDivideEachOffice, 0.05f) <= 0
+				|| Float.compare(calcAntiGroundDivideAntiGroundRatioDenominator, 0.05f) <= 0) {
 			antiGroundAreaReplaceVal = antiGroundArea;
-		} else if (calcEachOfficeDivideLandArea <= 0.05) {
+		} else if (Float.compare(calcEachOfficeDivideLandArea, 0.05f) <= 0) {
 			antiGroundAreaReplaceVal = landArea;
-		} else if (calcAntiGroundRatioDenominatorDivideEachOffice <= 0.05
-				|| calcAntiGroundRatioDenominatorDivideLandArea <= 0.05) {
+		} else if (Float.compare(calcAntiGroundRatioDenominatorDivideEachOffice, 0.05f) <= 0
+				|| Float.compare(calcAntiGroundRatioDenominatorDivideLandArea, 0.05f) <= 0) {
 			antiGroundAreaReplaceVal = antiGroundRatioDenominator;
 		} else {
 			antiGroundAreaReplaceVal = -1;
@@ -453,6 +450,5 @@ public class RealtyStandardData {
 
 		return antiGroundAreaReplaceVal;
 	}
-	
-	
+
 }

@@ -221,7 +221,7 @@ public class AreaRatioService extends SimpleFileVisitor<Path> {
 						calcResult = FormatUtil
 								.round(Math.abs(1 - areaRatio / ((arCalcTotalArea / antiGroundArea) * 100)));
 						calcResult2 = FormatUtil.round((arCalcTotalArea / antiGroundArea) * 100);
-						if (calcResult <= 0.02 && calcResult2 >= 40.00) {
+						if (Float.compare(calcResult, 0.02f) <= 0 && Float.compare(calcResult2, 40.00f) >= 0) {
 							result = "1";
 						}
 
@@ -315,7 +315,7 @@ public class AreaRatioService extends SimpleFileVisitor<Path> {
 											/ areaRatioVO.getAntiGroundAreaReplaceVal()) * 100)));
 							pyojebuData.put("antiGroundAreaReplaceVal", areaRatioVO.getAntiGroundAreaReplaceVal());
 
-							if (calcResult <= 0.01) {
+							if (Float.compare(calcResult, 0.01f) <= 0) {
 								result = "4";
 							} else {
 								result = "계산오류4";
@@ -352,7 +352,7 @@ public class AreaRatioService extends SimpleFileVisitor<Path> {
 								/ areaRatioVO.getAntiGroundAreaReplaceVal()) * 100;
 						pyojebuData.put("antiGroundAreaReplaceVal", areaRatioVO.getAntiGroundAreaReplaceVal());
 
-						if (calcResult <= 400) {
+						if (Float.compare(calcResult, 400f) <= 0) {
 							result = "5";
 						} else {
 							result = "계산오류5";

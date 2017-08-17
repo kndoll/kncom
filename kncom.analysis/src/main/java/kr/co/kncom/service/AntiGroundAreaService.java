@@ -67,7 +67,8 @@ public class AntiGroundAreaService extends SimpleFileVisitor<Path> {
 			float landArea = 0f; // 토지대장 면적
 			float eachOffcialPriceArea = 0f; // 개별공시지가
 			float antiGroundRatioDenominator = 0f; // 대지권비율분모
-
+			int outsideParcel = 0; // 외필지수 (아무값)
+			
 			// 지번
 			int gu = 0;
 			int dong = 0;
@@ -117,7 +118,8 @@ public class AntiGroundAreaService extends SimpleFileVisitor<Path> {
 					jibun2 = Integer.parseInt(totalPyojebuData[14]);
 
 					address = totalPyojebuData[7];
-
+					outsideParcel = Integer.parseInt(totalPyojebuData[18]);
+					
 					isExcuteReCalc = true;
 				}
 
@@ -144,7 +146,8 @@ public class AntiGroundAreaService extends SimpleFileVisitor<Path> {
 						jibun2 = Integer.parseInt(_arr[12]);
 
 						address = _arr[5];
-
+						outsideParcel = Integer.parseInt(_arr[16]);
+						
 						isExcuteReCalc = true;
 					} else {
 						// System.out.println("## ERROR MSG ==> 재계산 대상이 아님");
@@ -170,7 +173,8 @@ public class AntiGroundAreaService extends SimpleFileVisitor<Path> {
 
 				pyojebuData.put("areaRatioCalcTotalAreaReplaceVal", 0f);
 				pyojebuData.put("antiGroundAreaReplaceVal", 0f);
-
+				pyojebuData.put("outsideParcel", outsideParcel);
+				
 				// 대지면적 존재 여부
 				antiGroundAreaVO = new AntiGroundArea();
 
@@ -240,7 +244,9 @@ public class AntiGroundAreaService extends SimpleFileVisitor<Path> {
 
 		// 대지면적
 		antiGroundArea.setAntiGroundArea((float) pyojebuData.get("antiGroundArea"));
-
+		// 외필지 수
+		antiGroundArea.setOutsideParcel((int) pyojebuData.get("outsideParcel"));
+		
 		// 토지대장면적(합산)
 		// 대표지번의 토지면적
 		float landAreaSum = realtyStandardData.getLandArea(this.tjFileArr[0] + filePath.toString() + this.tjFileArr[1]); // 대표지번

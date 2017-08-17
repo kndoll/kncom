@@ -32,6 +32,8 @@ public class AntiGroundArea {
 	
 	private String result; // 결과값
 	
+	private int outsideParcel; // 외필지수
+	
 	public String getStep() {
 		return step;
 	}
@@ -134,6 +136,14 @@ public class AntiGroundArea {
 
 	public void setResult(String result) {
 		this.result = result;
+	}
+
+	public int getOutsideParcel() {
+		return outsideParcel;
+	}
+
+	public void setOutsideParcel(int outsideParcel) {
+		this.outsideParcel = outsideParcel;
 	}
 	
 }
