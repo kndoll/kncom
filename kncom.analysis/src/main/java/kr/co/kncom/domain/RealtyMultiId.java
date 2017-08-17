@@ -5,7 +5,7 @@ import java.io.Serializable;
 import lombok.Data;
 
 @Data
-public class AreaRatioMultiId implements Serializable {
+public class RealtyMultiId implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	

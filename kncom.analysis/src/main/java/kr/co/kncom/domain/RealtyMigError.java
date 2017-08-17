@@ -7,7 +7,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 @Entity
-public class AreaRatioError {
+public class RealtyMigError {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -15,7 +15,8 @@ public class AreaRatioError {
 	private String filePath;
 	@Column(length = 4000)
 	private String ErrorMsg;
-
+	private String kind;
+	
 	public Long getId() {
 		return id;
 	}
@@ -40,4 +41,12 @@ public class AreaRatioError {
 		ErrorMsg = errorMsg;
 	}
 
+	public String getKind() {
+		return kind;
+	}
+
+	public void setKind(String kind) {
+		this.kind = kind;
+	}
+	
 }

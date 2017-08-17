@@ -6,7 +6,7 @@ import javax.persistence.Id;
 import javax.persistence.IdClass;
 
 @Entity
-@IdClass(AreaRatioMultiId.class)
+@IdClass(RealtyMultiId.class)
 public class AreaRatio {
 
 	@Id
