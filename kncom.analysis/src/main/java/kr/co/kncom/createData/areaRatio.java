@@ -22,7 +22,7 @@ public class areaRatio implements CommandLineRunner {
 		
 		if (arg.length > 0) {
 			if (arg[0].equals("arearatio")) {
-				Path path = Paths.get("X:\\201706lobig");
+				Path path = Paths.get("X:\\201706lobig\\1");
 				
 				try {
 					Files.walkFileTree(path, areaRatioService);
