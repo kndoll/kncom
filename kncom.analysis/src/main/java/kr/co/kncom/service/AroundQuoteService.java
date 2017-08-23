@@ -86,6 +86,8 @@ public class AroundQuoteService {
 		List<String> sidogus = sidogusRepository.findSidogusFilePath(1);
 		String[] sidogusArr = null;
 		
+		System.out.println("## COUNT ==> " + sidogus.size());
+		
 		for (String _data : sidogus) {
 			
 			sidogusArr = _data.split("\\\\");
