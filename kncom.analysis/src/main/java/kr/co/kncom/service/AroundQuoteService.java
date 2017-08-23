@@ -86,13 +86,14 @@ public class AroundQuoteService {
 		List<String> sidogus = sidogusRepository.findSidogusFilePath(1);
 		String[] sidogusArr = null;
 		
-		System.out.println("## COUNT ==> " + sidogus.size());
-		
 		for (String _data : sidogus) {
 			
 			sidogusArr = _data.split("\\\\");
+			System.out.println("sidogusArr[0] ==> " + sidogusArr[0]);
+			System.out.println("sidogusArr[1] ==> " + sidogusArr[1]);
 			
 			params.put("key", sidogusArr[0]+sidogusArr[1]);
+			
 			params.put("type", "2");
 			params.put("si", "1"); // 서울만
 			params.put("sreg", sidogusArr[1]);
