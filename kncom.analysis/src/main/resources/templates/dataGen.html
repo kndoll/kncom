@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>데이터 생성</title>
+
+    <!-- Bootstrap -->
+    <link href="/webjars/bootstrap/3.3.7-1/css/bootstrap.min.css" rel="stylesheet">
+	<link href="/css/loding.css" type="text/css" rel="stylesheet">
+  </head>
+  <body>
+    <h1></h1>
+ 	<div class="container">
+ 	
+	 	<div class="btn-group-vertical" role="group" aria-label="Vertical button group">
+	      	<!--
+	    	<button type="button" class="btn btn-default">용적률 생성</button>
+	    	<button type="button" class="btn btn-default"></button>
+	    	-->
+			<div class="btn-group" role="group">
+				<button id="btnGroupVerticalDrop1" type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+				데이터피딩
+				<span class="caret"></span>
+				</button>
+				<ul class="dropdown-menu" role="menu" aria-labelledby="btnGroupVerticalDrop1">
+				<li><a href="javascript:dataCreation('aroundQuote');">시군구별 주변시세</a></li>
+				<li><a href="#">...</a></li>
+				</ul>
+			</div>
+			
+			<div class="btn-group" role="group">
+				<button id="btnGroupVerticalDrop1" type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+				데이터팀 요청
+				<span class="caret"></span>
+				</button>
+				<ul class="dropdown-menu" role="menu" aria-labelledby="btnGroupVerticalDrop1">
+				<li><a href="javascript:dataCreation('areaRatio');">용적률 클린징</a></li>
+				<li><a href="javascript:dataCreation('antiGroundArea');">대지면적 클린징</a></li>
+				</ul>
+			</div>
+	    </div>
+	
+	</div>
+	
+	<br>	
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="/webjars/jquery/3.2.1/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="/webjars/bootstrap/3.3.7-1/js/bootstrap.min.js"></script>
+    <script type="text/javascript">
+ 		
+    	$(document).ready(function(){
+    		
+    		var loading = $('<div id="loading" class="loading"></div><img id="loading_img" alt="loading" src="/images/viewLoading.gif" />').appendTo(document.body).hide();
+    		
+    		$(window).ajaxStart(function(){
+    			loading.show();
+    		}).ajaxStop(function(){
+    			loading.hide();
+    		});
+
+    	});
+    	
+		function dataCreation(type) {
+			
+			var params = "type=" + type;
+			console.log(params);
+			
+			$.ajax({
+				url : '/dataGen', 
+				type: "GET",
+				contentType: 'application/json; charset=utf-8',
+				data : params,  
+				dataType: 'text',
+				cache: false,
+				processData:false,
+				success : function(data) {
+					alert("데이터 생성 완료!!!");
+				},
+				error: function(jqXHR, textStatus, errorThrown)
+				{
+					alert("error!!!");
+				}	
+			});
+			
+		}
+    	
+
+    </script>
+       
+  </body>
+
+</html>

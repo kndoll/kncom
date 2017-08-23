@@ -192,7 +192,13 @@ public class StringUtil {
 
 		return rtnStr;
 	}
-
+	
+	/**
+	 * 배열자료의 디버깅을 위해 인덱스와 데이터를 매칭하여 보여준다.
+	 * 
+	 * @param arr 배열데이터
+	 * @param title 타이틀
+	 */
 	public static void printIndexData(String[] arr, String title) {
 		
 		System.out.println("##############" + title + "##############");
@@ -204,6 +210,7 @@ public class StringUtil {
 		}
 		
 		System.out.println("########################################");
-		
 	}
+	
+	
 }

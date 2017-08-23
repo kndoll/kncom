@@ -1,15 +1,24 @@
 package kr.co.kncom.util;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import org.json.JSONObject;
+import org.json.XML;
+
+import com.google.gson.Gson;
 
 public class FileUtil {
 	
@@ -134,5 +143,50 @@ public class FileUtil {
 		File file = new File(filePath);
 		
 		return file.exists();
+	}
+	
+	/**
+	 * xml 파일을 map 형태로 변환한다.
+	 *  
+	 * @param filePath
+	 * @return
+	 */
+	public static Map<String, Object> getMapFromXml(String filePath) {
+		
+		Gson gson = new Gson();
+		Map<String, Object> map = new HashMap<String, Object>();
+		String _tmpFileStr = FileUtil.readFileToString(filePath);
+		
+		// JSON TO MAP
+		JSONObject _jsonObj = XML.toJSONObject(_tmpFileStr, true);
+		map = (Map<String, Object>) gson.fromJson(_jsonObj.toString(), map.getClass());
+		
+		return map;
+	}
+	
+	/**
+	 * 
+	 * @param filePath
+	 * @param beanList
+	 */
+	public static void writeFileFromArr(String filePath, List<String> contentList) {
+		
+		try {
+			BufferedWriter bw = new BufferedWriter(new FileWriter(filePath));
+			
+			StringBuffer sb = new StringBuffer();
+			
+			for (String _data : contentList) {
+				sb.append(_data);
+				sb.append("\n");
+			}
+			
+			bw.write(sb.toString());
+			bw.close();
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
 	}
 }

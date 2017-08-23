@@ -44,11 +44,18 @@ public class AuctionListServiceTest {
 	}
 	
 	@Test
-	public void selectSidigus() throws UnsupportedEncodingException {
+	public void selectSidigus() {
 		
 		int tmp = sidogusRepository.findSidonguCodeSQL("서울특별시 강남구", 1);
 		System.out.println("##tmp ==> " + tmp);
 		int tmp2 = sidogusRepository.findDongCodeSQL("대치동", tmp, 1);
 		System.out.println("##tmp2 ==> " + tmp2);
+		
+		List<String> filePath = sidogusRepository.findDongFilePath(1);
+		
+		for (String _data : filePath) {
+			System.out.println("##filePath ==> " + _data);
+		}
+		
 	}
 }

@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,10 +21,14 @@ public class AreaRatioController {
 	@Autowired
 	AreaRatioService areaRatioService;
 	
+	@Value("${daejangRootDir}")
+	String daejangRootDir;
+	
 	@RequestMapping(value = "/areaRatioCreate", method = RequestMethod.GET)
 	public @ResponseBody String areaRatioCreate(Model model) {
 		
-		Path path = Paths.get("X:\\201706lobig");
+		//Path path = Paths.get("X:\\201706lobig");
+		Path path = Paths.get(daejangRootDir+"1");
 		
 		try {
 		    Files.walkFileTree(path, areaRatioService);

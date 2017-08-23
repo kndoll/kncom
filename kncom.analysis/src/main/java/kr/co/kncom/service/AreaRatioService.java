@@ -17,14 +17,14 @@ import org.springframework.stereotype.Service;
 
 import kr.co.kncom.domain.AreaRatio;
 import kr.co.kncom.domain.RealtyMigError;
-import kr.co.kncom.repository.RealtyMigErrorRepository;
 import kr.co.kncom.repository.AreaRatioRepository;
+import kr.co.kncom.repository.RealtyMigErrorRepository;
 import kr.co.kncom.util.FileUtil;
 import kr.co.kncom.util.FormatUtil;
 
 @Service
 public class AreaRatioService extends SimpleFileVisitor<Path> {
-
+	
 	private final String[] pyojebuFileArr = { "X:\\201706lobig\\", "daejang_pyojebu.dat" }; // 표제부
 	private final String[] totalPyojebuFileArr = { "X:\\201706lobig\\", "daejang_totalpyojebu.dat" }; // 총괄표제부
 	private final String[] jygyAreaFileArr = { "X:\\201706lobig\\", "daejang_jygyarea.dat" }; // 전유공유
@@ -606,5 +606,7 @@ public class AreaRatioService extends SimpleFileVisitor<Path> {
 
 		return areaRatio;
 	}
+	
+	
 	
 }
