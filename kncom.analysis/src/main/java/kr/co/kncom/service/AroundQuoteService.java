@@ -71,8 +71,6 @@ public class AroundQuoteService {
 		List<Sidos> sidos = sidosRepository.findByInd(1);
 		//List<Sidos> sidos = sidosRepository.findAll();
 		
-		
-		
 		for (Sidos _sidos : sidos) {
 			params.put("key", "1");
 			params.put("type", "1");
@@ -89,11 +87,8 @@ public class AroundQuoteService {
 		for (String _data : sidogus) {
 			
 			sidogusArr = _data.split("\\\\");
-			System.out.println("sidogusArr[0] ==> " + sidogusArr[0]);
-			System.out.println("sidogusArr[1] ==> " + sidogusArr[1]);
 			
 			params.put("key", sidogusArr[0]+sidogusArr[1]);
-			
 			params.put("type", "2");
 			params.put("si", "1"); // 서울만
 			params.put("sreg", sidogusArr[1]);
