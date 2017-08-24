@@ -5,13 +5,13 @@ import javax.persistence.Id;
 
 @Entity
 public class AroundQuote {
-	
+
 	@Id
 	private String key;
 	private String type;
 	private String si;
 	private String sreg;
-	private String seug;
+	private String seub;
 	private String month;
 	private String sedecount;
 	private String memeChange;
@@ -40,11 +40,11 @@ public class AroundQuote {
 	public void setSreg(String sreg) {
 		this.sreg = sreg;
 	}
-	public String getSeug() {
-		return seug;
+	public String getSeub() {
+		return seub;
 	}
-	public void setSeug(String seug) {
-		this.seug = seug;
+	public void setSeub(String seub) {
+		this.seub = seub;
 	}
 	public String getMonth() {
 		return month;
@@ -70,6 +70,4 @@ public class AroundQuote {
 	public void setMemCValue(String memCValue) {
 		this.memCValue = memCValue;
 	}
-	
-	
 }

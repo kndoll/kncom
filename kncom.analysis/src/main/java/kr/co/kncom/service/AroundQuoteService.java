@@ -110,7 +110,7 @@ public class AroundQuoteService {
 			params.put("type", "3");
 			params.put("si", "1"); // 서울만
 			params.put("sreg", dongsArr[1]);
-			params.put("seug", dongsArr[2]);
+			params.put("seub", dongsArr[2]);
 			
 			aroundQuoteList.add(buildAroundQuote(params));
 		}
@@ -135,7 +135,7 @@ public class AroundQuoteService {
 			content.append(String.format("%1s", _data.getType()));
 			content.append(String.format("%1s", _data.getSi()));
 			content.append(String.format("%5s", _data.getSreg()));
-			content.append(String.format("%5s", _data.getSeug()));
+			content.append(String.format("%5s", _data.getSeub()));
 			content.append(String.format("%6s", _data.getMonth()));
 			content.append(String.format("%6s", _data.getSedecount()));
 			content.append(String.format("%32s", _data.getMemeChange()));
@@ -162,7 +162,7 @@ public class AroundQuoteService {
 		String filePath = null;
 		String si = params.get("si");
 		String sreg = params.get("sreg");
-		String seug = params.get("seug");
+		String seub = params.get("seub");
 		
 		// 기본데이터 setting
 		rtnAroundQuote.setKey(params.get("key"));
@@ -176,9 +176,9 @@ public class AroundQuoteService {
 			filePath += sreg + "\\";
 		}
 		
-		if (seug != null && seug.length() > 0) {
-			rtnAroundQuote.setSeug(seug);
-			filePath += seug + "\\";
+		if (seub != null && seub.length() > 0) {
+			rtnAroundQuote.setSeub(seub);
+			filePath += seub + "\\";
 		}
 		
 		// 세대수를 가져온다.
@@ -234,9 +234,6 @@ public class AroundQuoteService {
 			Double prevAver = Double.parseDouble(prevAverArr[(prevAverArr.length)-1]);
 			
 			Double aver = Double.parseDouble(getTradingValuation(averFilePath));
-			
-			System.out.println("## prevAver ==> " + prevAver);
-			System.out.println("## aver ==> " + aver);
 			
 			if (Double.compare(prevAver, 0) > 0) {
 				rtnMemeChange = String.valueOf(Math.round(aver - prevAver));
