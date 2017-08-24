@@ -1,15 +1,22 @@
 package kr.co.kncom.controller;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import kr.co.kncom.service.AntiGroundAreaService;
@@ -27,7 +34,10 @@ public class DataGenController {
 	private AroundQuoteService aroundQuoteService;
 	
 	@Value("${daejangRootDir}")
-	String daejangRootDir;
+	private String daejangRootDir;
+	
+	@Value("${writeFilePath}")
+	private String writeFilePath;
 	
 	@RequestMapping("/dataGen")
 	public String dataGen(Model model, @RequestParam(value="type", required=false) String type) {
@@ -75,4 +85,18 @@ public class DataGenController {
 		return "dataGen";
 	}
 	
+	@RequestMapping(value="/download", method=RequestMethod.GET)
+	public void getDownLoad(HttpServletResponse response) throws IOException {
+		
+		FileInputStream fis = new FileInputStream(new File(writeFilePath)); 
+		
+		// Set the content type and attachment header.
+		response.addHeader("Content-disposition", "attachment;filename="+writeFilePath);
+		response.setContentType("txt/plain");
+		
+		OutputStream out = response.getOutputStream();
+		FileCopyUtils.copy(fis, out);
+		
+		out.flush();
+	} 
 }
